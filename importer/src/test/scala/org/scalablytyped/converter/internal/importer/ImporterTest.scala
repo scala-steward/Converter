@@ -51,6 +51,7 @@ class ImporterTest extends AnyFunSuite with ImporterHarness with ParallelTestExe
   test("properties")(assertImportsOk("properties", pedantic                         = true, update  = update))
   test("keyof")(assertImportsOk("keyof", pedantic                                   = true, update  = update))
   test("antd")(assertImportsOk("antd", pedantic                                     = true, update  = update))
+  test("mui4")(assertImportsOk("mui4", pedantic                                     = true, update  = update, flavour = Slinky))
 
   test("material-ui-slinky")(
     assertImportsOk("material-ui", pedantic = true, update = update, flavour = Slinky),

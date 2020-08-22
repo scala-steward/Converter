@@ -29,7 +29,7 @@ class TsTypeFormatter(val keepComments: Boolean) {
   def param(p: TsFunParam): String =
     p match {
       case TsFunParam(_, name, tpe) =>
-        List[Option[String]](Some(name.value), tpe.map(x => s": ${apply(x)}")).flatten.mkString(" ")
+        List[Option[String]](Some(name.value), tpe.map(apply)).flatten.mkString(": ")
     }
 
   def tparams[T <: AnyRef](ts: IArray[T])(f: T => String): Option[String] =
@@ -44,7 +44,7 @@ class TsTypeFormatter(val keepComments: Boolean) {
 
   def member(m: TsMember): String = m match {
     case TsMemberCall(_, l, s) =>
-      s"${level(l)} ${sig(s)}"
+      List[Option[String]](level(l), Some(sig(s))).mkString(" ")
     case TsMemberCtor(_, _, s) =>
       s"new ${sig(s)}"
     case TsMemberFunction(_, l, name, methodType, s, isStatic, isReadOnly) =>

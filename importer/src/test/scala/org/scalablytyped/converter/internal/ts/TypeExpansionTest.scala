@@ -165,4 +165,23 @@ type Test = Required<Pick<CSSProperties, 'fontFamily' | 'fontSize' | 'fontWeight
 
     out.membersByName(TsIdent("color")).shouldBe(IArray(expected))
   }
+
+  test("Mui 4") {
+    val out = run(s"""
+
+""")
+
+    val expected = TsMemberProperty(
+      NoComments,
+      ProtectionLevel.Default,
+      TsIdentSimple("color"),
+      Some(TsTypeRef.string),
+      None,
+      isStatic   = false,
+      isReadOnly = false,
+    )
+
+    val actual = out.membersByName(TsIdent("ButtonBase"))
+    actual.shouldBe(IArray(expected))
+  }
 }

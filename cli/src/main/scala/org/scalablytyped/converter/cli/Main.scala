@@ -71,7 +71,7 @@ object Main {
     wantedLibs         = SortedSet(),
     publishBintrayRepo = None,
     publishGitUrl      = None,
-    inDirectory        = os.pwd,
+    inDirectory        = os.home / "scalablytyped" / "muitest",
     includeDev         = false,
     includeProject     = false,
   )

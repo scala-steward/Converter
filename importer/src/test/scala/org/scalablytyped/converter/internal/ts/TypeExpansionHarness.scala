@@ -26,7 +26,10 @@ trait TypeExpansionHarness {
     )
 
   def run(input: String): TsParsedFile = {
-    val parsed       = parser(input).get
+    val parsed       = parser(input) match {
+      case parser.Success(res, _) => res
+      case parser.NoSuccess(str, i) => sys.error(s"$str ${i.pos}")
+    }
     val logger       = logging.stringWriter()
     val withCodePath = SetCodePath.visitTsParsedFile(CodePath.HasPath(libName, TsQIdent.empty))(parsed)
 

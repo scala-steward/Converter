@@ -24,10 +24,10 @@ trait FlavourImplReact extends FlavourImpl {
   lazy val identifyComponents = new IdentifyReactComponents(reactNames, parentsResolver, enableReactTreeShaking)
 
   def involvesReact(scope: TreeScope): Boolean = {
-    val react = Name("react")
+    val react = reactNames.libName
     scope.libName === react || scope.root.dependencies.contains(react)
   }
 
   def isReact(scope: TreeScope): Boolean =
-    scope.libName === Name("react")
+    scope.libName === reactNames.libName
 }

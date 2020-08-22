@@ -528,7 +528,7 @@ object TsTypeIntersect {
     }
 
   def simplified(types: IArray[TsType]): TsType = {
-    val withCombinedObjects = types.partitionCollect {
+    val withCombinedObjects = flatten(types).partitionCollect {
       case x: TsTypeObject if !ExtractInterfaces.isTypeMapping(x.members) => x
     } match {
       case (Empty, all)              => all
