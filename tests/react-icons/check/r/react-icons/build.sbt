@@ -1,15 +1,15 @@
 organization := "org.scalablytyped"
 name := "react-icons"
-version := "2.2-7f5e78"
-scalaVersion := "2.13.3"
+version := "2.2-ddf531"
+scalaVersion := "0.28.0-bin-20200925-f4528ce-NIGHTLY"
 enablePlugins(ScalaJSPlugin)
 libraryDependencies ++= Seq(
-  "com.olvind" %%% "scalablytyped-runtime" % "2.1.0",
-  "org.scalablytyped" %%% "react" % "0.0-unknown-89da21",
-  "org.scalablytyped" %%% "react-icon-base" % "2.1-082461",
-  "org.scalablytyped" %%% "std" % "0.0-unknown-26af17")
+  "com.olvind" %%% "scalablytyped-runtime" % "2.2.0",
+  "org.scalablytyped" %%% "react" % "0.0-unknown-db36cc",
+  "org.scalablytyped" %%% "react-icon-base" % "2.1-461cea",
+  "org.scalablytyped" %%% "std" % "0.0-unknown-c1503f")
 publishArtifact in packageDoc := false
-scalacOptions ++= List("-encoding", "utf-8", "-feature", "-g:notailcalls", "-language:implicitConversions", "-language:higherKinds", "-language:existentials")
+scalacOptions ++= List("-encoding", "utf-8", "-feature", "-language:implicitConversions", "-language:higherKinds", "-language:existentials", "-scalajs")
 licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
 bintrayRepository := "ScalablyTyped"
 resolvers += Resolver.bintrayRepo("oyvindberg", "ScalablyTyped")

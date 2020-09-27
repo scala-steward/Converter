@@ -188,11 +188,13 @@ class ImportType(stdNames: QualifiedName.StdNames) {
             }
           }
 
-        val rewritten = patched.map {
+        val (undefineds, rest) = patched.partitionCollect {
           case TsTypeRef.undefined => TypeRef.undefined
-          case other               => apply(wildcards, scope, importName)(other)
         }
-        TypeRef.Union(rewritten, NoComments, sort = false)
+        val rewritten = rest.collect {
+          case other => apply(if (undefineds.nonEmpty) Wildcards.No else wildcards, scope, importName)(other)
+        }
+        TypeRef.Union(undefineds ++ rewritten, NoComments, sort = false)
 
       case TsTypeIntersect(types) =>
         TypeRef.Intersection(types.map(apply(Wildcards.No, scope, importName)), NoComments)
