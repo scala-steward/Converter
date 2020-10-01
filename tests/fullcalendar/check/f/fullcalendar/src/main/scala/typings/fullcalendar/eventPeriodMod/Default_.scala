@@ -10,7 +10,7 @@ class Default_ protected () extends js.Object {
   var eventInstanceGroupsById: js.Any = js.native
   var freezeDepth: Double = js.native
   @JSName("on")
-  var on_Original: js.Function2[/* types */ js.Any, /* handler */ js.Any, _] = js.native
+  var on_Original: js.Function2[/* types */ js.Any, /* handler */ js.Any, ?] = js.native
   var pendingCnt: Double = js.native
   var requestsByUid: js.Any = js.native
   def isWithinRange(start: js.Any, end: js.Any): Boolean = js.native

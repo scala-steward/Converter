@@ -20,7 +20,7 @@ object EitherT {
     __obj.asInstanceOf[EitherT[F]]
   }
   @scala.inline
-  implicit class EitherTOps[Self <: EitherT[_], F] (val x: Self & EitherT[F]) extends AnyVal {
+  implicit class EitherTOps[Self <: EitherT[?], F] (val x: Self & EitherT[F]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

@@ -16,7 +16,7 @@ object ndarray {
     __obj.asInstanceOf[ndarray[T]]
   }
   @scala.inline
-  implicit class ndarrayOps[Self <: ndarray[_], T] (val x: Self & ndarray[T]) extends AnyVal {
+  implicit class ndarrayOps[Self <: ndarray[?], T] (val x: Self & ndarray[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

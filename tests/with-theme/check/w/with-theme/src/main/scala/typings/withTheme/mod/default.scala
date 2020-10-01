@@ -8,6 +8,6 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 @JSImport("with-theme", JSImport.Default)
 @js.native
 object default extends js.Object {
-  def apply(): js.Function1[/* component */ ComponentType[js.Any & WithTheme], ComponentClass[_]] = js.native
+  def apply(): js.Function1[/* component */ ComponentType[js.Any & WithTheme], ComponentClass[?]] = js.native
 }
 

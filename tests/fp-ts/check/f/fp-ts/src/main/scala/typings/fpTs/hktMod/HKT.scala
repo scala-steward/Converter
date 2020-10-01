@@ -16,7 +16,7 @@ object HKT {
     __obj.asInstanceOf[HKT[URI, A]]
   }
   @scala.inline
-  implicit class HKTOps[Self <: HKT[_, _], URI, A] (val x: Self & (HKT[URI, A])) extends AnyVal {
+  implicit class HKTOps[Self <: HKT[?, ?], URI, A] (val x: Self & (HKT[URI, A])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

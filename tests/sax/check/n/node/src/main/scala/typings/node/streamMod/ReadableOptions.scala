@@ -6,11 +6,11 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 
 @js.native
 trait ReadableOptions extends js.Object {
-  var destroy: js.UndefOr[js.Function1[/* error */ js.UndefOr[Error], _]] = js.native
+  var destroy: js.UndefOr[js.Function1[/* error */ js.UndefOr[Error], ?]] = js.native
   var encoding: js.UndefOr[String] = js.native
   var highWaterMark: js.UndefOr[Double] = js.native
   var objectMode: js.UndefOr[Boolean] = js.native
-  var read: js.UndefOr[js.ThisFunction1[/* this */ Readable, /* size */ js.UndefOr[Double], _]] = js.native
+  var read: js.UndefOr[js.ThisFunction1[/* this */ Readable, /* size */ js.UndefOr[Double], ?]] = js.native
 }
 
 object ReadableOptions {
@@ -31,7 +31,7 @@ object ReadableOptions {
         x
     }
     @scala.inline
-    def setDestroy(value: /* error */ js.UndefOr[Error] => _): Self = this.set("destroy", js.Any.fromFunction1(value))
+    def setDestroy(value: /* error */ js.UndefOr[Error] => ?): Self = this.set("destroy", js.Any.fromFunction1(value))
     @scala.inline
     def deleteDestroy: Self = this.set("destroy", js.undefined)
     @scala.inline
@@ -47,7 +47,7 @@ object ReadableOptions {
     @scala.inline
     def deleteObjectMode: Self = this.set("objectMode", js.undefined)
     @scala.inline
-    def setRead(value: js.ThisFunction1[/* this */ Readable, /* size */ js.UndefOr[Double], _]): Self = this.set("read", value.asInstanceOf[js.Any])
+    def setRead(value: js.ThisFunction1[/* this */ Readable, /* size */ js.UndefOr[Double], ?]): Self = this.set("read", value.asInstanceOf[js.Any])
     @scala.inline
     def deleteRead: Self = this.set("read", js.undefined)
   }

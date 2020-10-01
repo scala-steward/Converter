@@ -16,7 +16,7 @@ object URI2HKT2 {
     __obj.asInstanceOf[URI2HKT2[L, A]]
   }
   @scala.inline
-  implicit class URI2HKT2Ops[Self <: URI2HKT2[_, _], L, A] (val x: Self & (URI2HKT2[L, A])) extends AnyVal {
+  implicit class URI2HKT2Ops[Self <: URI2HKT2[?, ?], L, A] (val x: Self & (URI2HKT2[L, A])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

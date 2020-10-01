@@ -18,7 +18,7 @@ object ErrorObserver {
     __obj.asInstanceOf[ErrorObserver[T]]
   }
   @scala.inline
-  implicit class ErrorObserverOps[Self <: ErrorObserver[_], T] (val x: Self & ErrorObserver[T]) extends AnyVal {
+  implicit class ErrorObserverOps[Self <: ErrorObserver[?], T] (val x: Self & ErrorObserver[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

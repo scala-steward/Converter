@@ -15,7 +15,7 @@ object observableMod extends js.Object {
     @JSName("foo")
     var foo_Original: OperatorFunction[Double, String] = js.native
     /** @deprecated This is an internal implementation detail, do not use. */
-    var source: Observable[_] = js.native
+    var source: Observable[?] = js.native
     def foo(source: Observable[Double]): Observable[String] = js.native
     def pipe(): Observable[T] = js.native
   }

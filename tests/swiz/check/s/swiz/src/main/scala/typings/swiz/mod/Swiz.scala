@@ -25,7 +25,7 @@ class Swiz protected () extends js.Object {
   ): Unit = js.native
   def serializeForPagination(
     mode: SERIALIZATION,
-    array: js.Array[_],
+    array: js.Array[?],
     metadata: js.Any,
     callback: js.Function2[/* err */ js.Any, /* result */ String, Unit]
   ): Unit = js.native

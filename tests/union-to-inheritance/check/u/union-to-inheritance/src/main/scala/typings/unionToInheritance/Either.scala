@@ -18,7 +18,7 @@ object Either {
     __obj.asInstanceOf[Either[L, R]]
   }
   @scala.inline
-  implicit class EitherOps[Self <: Either[_, _], L, R] (val x: Self & (Either[L, R])) extends AnyVal {
+  implicit class EitherOps[Self <: Either[?, ?], L, R] (val x: Self & (Either[L, R])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

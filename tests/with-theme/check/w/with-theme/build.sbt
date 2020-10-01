@@ -1,11 +1,11 @@
 organization := "org.scalablytyped"
 name := "with-theme"
-version := "0.0-unknown-ab715e"
+version := "0.0-unknown-8532eb"
 scalaVersion := "0.28.0-bin-20200925-f4528ce-NIGHTLY"
 enablePlugins(ScalaJSPlugin)
 libraryDependencies ++= Seq(
   "com.olvind" %%% "scalablytyped-runtime" % "2.2.0",
-  "org.scalablytyped" %%% "react" % "0.0-unknown-b3eda0",
+  "org.scalablytyped" %%% "react" % "0.0-unknown-1af8c5",
   "org.scalablytyped" %%% "std" % "0.0-unknown-24e768")
 publishArtifact in packageDoc := false
 scalacOptions ++= List("-encoding", "utf-8", "-feature", "-language:implicitConversions", "-language:higherKinds", "-language:existentials", "-scalajs")

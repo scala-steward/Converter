@@ -5,7 +5,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 
 @js.native
 trait Module extends js.Object {
-  var children: js.Array[_] = js.native
+  var children: js.Array[?] = js.native
   var exports: js.Any = js.native
   var filename: String = js.native
   var hot: js.UndefOr[Hot] = js.native

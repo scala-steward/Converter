@@ -30,7 +30,7 @@ object RenderContext {
     __obj.asInstanceOf[RenderContext[Props]]
   }
   @scala.inline
-  implicit class RenderContextOps[Self <: RenderContext[_], Props] (val x: Self & RenderContext[Props]) extends AnyVal {
+  implicit class RenderContextOps[Self <: RenderContext[?], Props] (val x: Self & RenderContext[Props]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

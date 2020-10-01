@@ -17,7 +17,7 @@ object ComputedOptions {
     __obj.asInstanceOf[ComputedOptions[T]]
   }
   @scala.inline
-  implicit class ComputedOptionsOps[Self <: ComputedOptions[_], T] (val x: Self & ComputedOptions[T]) extends AnyVal {
+  implicit class ComputedOptionsOps[Self <: ComputedOptions[?], T] (val x: Self & ComputedOptions[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

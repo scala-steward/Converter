@@ -20,7 +20,7 @@ object DOMElement {
     __obj.asInstanceOf[DOMElement[P, T]]
   }
   @scala.inline
-  implicit class DOMElementOps[Self <: DOMElement[_, _], /* <: typings.react.mod.HTMLAttributes[T] | typings.react.mod.SVGAttributes[T] */ P, /* <: typings.std.Element */ T] (val x: Self & (DOMElement[P, T])) extends AnyVal {
+  implicit class DOMElementOps[Self <: DOMElement[?, ?], /* <: typings.react.mod.HTMLAttributes[T] | typings.react.mod.SVGAttributes[T] */ P, /* <: typings.std.Element */ T] (val x: Self & (DOMElement[P, T])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

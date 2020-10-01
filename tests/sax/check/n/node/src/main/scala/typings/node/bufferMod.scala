@@ -30,7 +30,7 @@ object bufferMod extends js.Object {
       *
       * @param array The octets to store.
       */
-    def this(array: js.Array[_]) = this()
+    def this(array: js.Array[?]) = this()
     /**
       * Allocates a new buffer containing the given {array} of octets.
       *
@@ -61,7 +61,7 @@ object bufferMod extends js.Object {
   
   @js.native
   class SlowBuffer protected () extends NodeBuffer {
-    def this(array: js.Array[_]) = this()
+    def this(array: js.Array[?]) = this()
     def this(size: Double) = this()
     def this(size: Uint8Array) = this()
     def this(str: String) = this()
@@ -107,7 +107,7 @@ object bufferMod extends js.Object {
     /**
       * Allocates a new Buffer using an {array} of octets.
       */
-    def from(array: js.Array[_]): typings.node.Buffer = js.native
+    def from(array: js.Array[?]): typings.node.Buffer = js.native
   }
   
   @js.native

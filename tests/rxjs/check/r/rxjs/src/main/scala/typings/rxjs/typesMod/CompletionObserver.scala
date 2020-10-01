@@ -18,7 +18,7 @@ object CompletionObserver {
     __obj.asInstanceOf[CompletionObserver[T]]
   }
   @scala.inline
-  implicit class CompletionObserverOps[Self <: CompletionObserver[_], T] (val x: Self & CompletionObserver[T]) extends AnyVal {
+  implicit class CompletionObserverOps[Self <: CompletionObserver[?], T] (val x: Self & CompletionObserver[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

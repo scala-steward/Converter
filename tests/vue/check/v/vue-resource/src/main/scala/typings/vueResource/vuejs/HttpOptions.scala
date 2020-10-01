@@ -5,7 +5,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 
 @js.native
 trait HttpOptions extends js.Object {
-  var before: js.UndefOr[js.Function1[/* request */ js.Any, _]] = js.native
+  var before: js.UndefOr[js.Function1[/* request */ js.Any, ?]] = js.native
   var body: js.UndefOr[js.Any] = js.native
   var credentials: js.UndefOr[Boolean] = js.native
   var emulateHTTP: js.UndefOr[Boolean] = js.native
@@ -13,7 +13,7 @@ trait HttpOptions extends js.Object {
   var headers: js.UndefOr[js.Any] = js.native
   var method: js.UndefOr[String] = js.native
   var params: js.UndefOr[js.Any] = js.native
-  var progress: js.UndefOr[js.Function1[/* event */ js.Any, _]] = js.native
+  var progress: js.UndefOr[js.Function1[/* event */ js.Any, ?]] = js.native
   var url: js.UndefOr[String] = js.native
 }
 
@@ -35,7 +35,7 @@ object HttpOptions {
         x
     }
     @scala.inline
-    def setBefore(value: /* request */ js.Any => _): Self = this.set("before", js.Any.fromFunction1(value))
+    def setBefore(value: /* request */ js.Any => ?): Self = this.set("before", js.Any.fromFunction1(value))
     @scala.inline
     def deleteBefore: Self = this.set("before", js.undefined)
     @scala.inline
@@ -67,7 +67,7 @@ object HttpOptions {
     @scala.inline
     def deleteParams: Self = this.set("params", js.undefined)
     @scala.inline
-    def setProgress(value: /* event */ js.Any => _): Self = this.set("progress", js.Any.fromFunction1(value))
+    def setProgress(value: /* event */ js.Any => ?): Self = this.set("progress", js.Any.fromFunction1(value))
     @scala.inline
     def deleteProgress: Self = this.set("progress", js.undefined)
     @scala.inline

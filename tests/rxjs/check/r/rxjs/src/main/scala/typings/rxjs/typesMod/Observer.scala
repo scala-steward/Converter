@@ -18,7 +18,7 @@ object Observer {
     __obj.asInstanceOf[Observer[T]]
   }
   @scala.inline
-  implicit class ObserverOps[Self <: Observer[_], T] (val x: Self & Observer[T]) extends AnyVal {
+  implicit class ObserverOps[Self <: Observer[?], T] (val x: Self & Observer[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

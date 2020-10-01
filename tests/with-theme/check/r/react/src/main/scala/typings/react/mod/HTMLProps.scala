@@ -20,7 +20,7 @@ object HTMLProps {
     __obj.asInstanceOf[HTMLProps[T]]
   }
   @scala.inline
-  implicit class HTMLPropsOps[Self <: HTMLProps[_], T] (val x: Self & HTMLProps[T]) extends AnyVal {
+  implicit class HTMLPropsOps[Self <: HTMLProps[?], T] (val x: Self & HTMLProps[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

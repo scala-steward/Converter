@@ -18,7 +18,7 @@ object PropOptions {
     __obj.asInstanceOf[PropOptions[T]]
   }
   @scala.inline
-  implicit class PropOptionsOps[Self <: PropOptions[_], T] (val x: Self & PropOptions[T]) extends AnyVal {
+  implicit class PropOptionsOps[Self <: PropOptions[?], T] (val x: Self & PropOptions[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

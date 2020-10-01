@@ -19,7 +19,7 @@ object Foo2 {
     __obj.asInstanceOf[Foo2[U, V]]
   }
   @scala.inline
-  implicit class Foo2Ops[Self <: Foo2[_, _], U, V] (val x: Self & (Foo2[U, V])) extends AnyVal {
+  implicit class Foo2Ops[Self <: Foo2[?, ?], U, V] (val x: Self & (Foo2[U, V])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

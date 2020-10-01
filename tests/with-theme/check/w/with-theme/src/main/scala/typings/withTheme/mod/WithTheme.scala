@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 
 @js.native
 trait WithTheme extends js.Object {
-  var innerRef: js.UndefOr[Ref[_] | RefObject[_]] = js.native
+  var innerRef: js.UndefOr[Ref[?] | RefObject[?]] = js.native
   var theme: String = js.native
 }
 
@@ -31,7 +31,7 @@ object WithTheme {
     @scala.inline
     def setTheme(value: String): Self = this.set("theme", value.asInstanceOf[js.Any])
     @scala.inline
-    def setInnerRef(value: Ref[_] | RefObject[_]): Self = this.set("innerRef", value.asInstanceOf[js.Any])
+    def setInnerRef(value: Ref[?] | RefObject[?]): Self = this.set("innerRef", value.asInstanceOf[js.Any])
     @scala.inline
     def deleteInnerRef: Self = this.set("innerRef", js.undefined)
   }

@@ -21,7 +21,7 @@ object FunctionalComponentOptions {
     __obj.asInstanceOf[FunctionalComponentOptions[Props, PropDefs]]
   }
   @scala.inline
-  implicit class FunctionalComponentOptionsOps[Self <: FunctionalComponentOptions[_, _], Props, PropDefs] (val x: Self & (FunctionalComponentOptions[Props, PropDefs])) extends AnyVal {
+  implicit class FunctionalComponentOptionsOps[Self <: FunctionalComponentOptions[?, ?], Props, PropDefs] (val x: Self & (FunctionalComponentOptions[Props, PropDefs])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

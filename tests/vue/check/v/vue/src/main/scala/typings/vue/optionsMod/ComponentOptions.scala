@@ -20,7 +20,11 @@ trait ComponentOptions[V /* <: Vue */, Data, Methods, Computed, PropsDef] extend
   var beforeMount: js.UndefOr[js.Function0[Unit]] = js.native
   var beforeUpdate: js.UndefOr[js.Function0[Unit]] = js.native
   var comments: js.UndefOr[Boolean] = js.native
-  var components: js.UndefOr[StringDictionary[(Component[_, _, _, _]) | (AsyncComponent[_, _, _, _])]] = js.native
+  var components: js.UndefOr[
+    StringDictionary[
+      (Component[js.Any, js.Any, js.Any, js.Any]) | (AsyncComponent[js.Any, js.Any, js.Any, js.Any])
+    ]
+  ] = js.native
   var computed: js.UndefOr[Accessors[Computed]] = js.native
   var created: js.UndefOr[js.Function0[Unit]] = js.native
   var data: js.UndefOr[Data] = js.native
@@ -68,7 +72,7 @@ trait ComponentOptions[V /* <: Vue */, Data, Methods, Computed, PropsDef] extend
   var template: js.UndefOr[String] = js.native
   var transitions: js.UndefOr[StringDictionary[js.Object]] = js.native
   var updated: js.UndefOr[js.Function0[Unit]] = js.native
-  var watch: js.UndefOr[Record[String, WatchOptionsWithHandler[_] | WatchHandler[_] | String]] = js.native
+  var watch: js.UndefOr[Record[String, WatchOptionsWithHandler[?] | WatchHandler[js.Any] | String]] = js.native
 }
 
 object ComponentOptions {
@@ -78,7 +82,7 @@ object ComponentOptions {
     __obj.asInstanceOf[ComponentOptions[V, Data, Methods, Computed, PropsDef]]
   }
   @scala.inline
-  implicit class ComponentOptionsOps[Self <: ComponentOptions[_, _, _, _, _], /* <: typings.vue.vueMod.Vue */ V, Data, Methods, Computed, PropsDef] (val x: Self & (ComponentOptions[V, Data, Methods, Computed, PropsDef])) extends AnyVal {
+  implicit class ComponentOptionsOps[Self <: ComponentOptions[?, ?, ?, ?, ?], /* <: typings.vue.vueMod.Vue */ V, Data, Methods, Computed, PropsDef] (val x: Self & (ComponentOptions[V, Data, Methods, Computed, PropsDef])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline
@@ -113,7 +117,11 @@ object ComponentOptions {
     @scala.inline
     def deleteComments: Self = this.set("comments", js.undefined)
     @scala.inline
-    def setComponents(value: StringDictionary[(Component[_, _, _, _]) | (AsyncComponent[_, _, _, _])]): Self = this.set("components", value.asInstanceOf[js.Any])
+    def setComponents(
+      value: StringDictionary[
+          (Component[js.Any, js.Any, js.Any, js.Any]) | (AsyncComponent[js.Any, js.Any, js.Any, js.Any])
+        ]
+    ): Self = this.set("components", value.asInstanceOf[js.Any])
     @scala.inline
     def deleteComponents: Self = this.set("components", js.undefined)
     @scala.inline
@@ -263,7 +271,7 @@ object ComponentOptions {
     @scala.inline
     def deleteUpdated: Self = this.set("updated", js.undefined)
     @scala.inline
-    def setWatch(value: Record[String, WatchOptionsWithHandler[_] | WatchHandler[_] | String]): Self = this.set("watch", value.asInstanceOf[js.Any])
+    def setWatch(value: Record[String, WatchOptionsWithHandler[?] | WatchHandler[js.Any] | String]): Self = this.set("watch", value.asInstanceOf[js.Any])
     @scala.inline
     def deleteWatch: Self = this.set("watch", js.undefined)
   }

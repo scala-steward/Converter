@@ -15,7 +15,7 @@ object HTMLAttributes {
     __obj.asInstanceOf[HTMLAttributes[T]]
   }
   @scala.inline
-  implicit class HTMLAttributesOps[Self <: HTMLAttributes[_], T] (val x: Self & HTMLAttributes[T]) extends AnyVal {
+  implicit class HTMLAttributesOps[Self <: HTMLAttributes[?], T] (val x: Self & HTMLAttributes[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

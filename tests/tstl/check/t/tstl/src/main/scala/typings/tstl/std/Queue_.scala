@@ -16,7 +16,7 @@ object Queue_ {
     __obj.asInstanceOf[Queue_[T]]
   }
   @scala.inline
-  implicit class Queue_Ops[Self <: Queue_[_], T] (val x: Self & Queue_[T]) extends AnyVal {
+  implicit class Queue_Ops[Self <: Queue_[?], T] (val x: Self & Queue_[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

@@ -73,14 +73,25 @@ class ImportType(stdNames: QualifiedName.StdNames) {
 
         apply(wildcards, scope, importName)(withComments)
 
-      case TsTypeRef(cs, base: TsQIdent, targs: IArray[TsType]) =>
+      case tr @ TsTypeRef(cs, base: TsQIdent, targs: IArray[TsType]) =>
         base match {
           case TsQIdent.any | TsQIdent.unknown =>
             (if (wildcards.allowed) TypeRef.Wildcard else TypeRef.Any).withComments(cs)
 
           case other =>
+            // avoid "unreducible application of higher-kinded type [T] =>>"
+            // unions or types would effectively be existential types, which are no longer supported
+            lazy val nextWildcards = {
+              ts.FollowAliases(scope, skipValidation = true)(tr) match {
+                case TsTypeUnion(_)     => Wildcards.No
+                case TsTypeIntersect(_) => Wildcards.No
+                case TsTypeFunction(_)  => Wildcards.No
+                case _                  => wildcards.maybeAllow
+              }
+            }
+
             lazy val isInheritance = IsInheritance(other, scope)
-            lazy val targs2        = targs.map(apply(wildcards.maybeAllow, scope, importName))
+            lazy val targs2        = targs.map(apply(nextWildcards, scope, importName))
 
             Mappings.get(other) match {
               case Some(m: RefMapping)  => m.pick(isInheritance).withComments(cs)

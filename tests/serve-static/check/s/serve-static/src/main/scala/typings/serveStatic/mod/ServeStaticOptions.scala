@@ -6,7 +6,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 
 @js.native
 trait ServeStaticOptions extends js.Object {
-  var setHeaders: js.UndefOr[js.Function3[/* res */ Response, /* path */ String, /* stat */ js.Any, _]] = js.native
+  var setHeaders: js.UndefOr[js.Function3[/* res */ Response, /* path */ String, /* stat */ js.Any, ?]] = js.native
 }
 
 object ServeStaticOptions {
@@ -27,7 +27,7 @@ object ServeStaticOptions {
         x
     }
     @scala.inline
-    def setSetHeaders(value: (/* res */ Response, /* path */ String, /* stat */ js.Any) => _): Self = this.set("setHeaders", js.Any.fromFunction3(value))
+    def setSetHeaders(value: (/* res */ Response, /* path */ String, /* stat */ js.Any) => ?): Self = this.set("setHeaders", js.Any.fromFunction3(value))
     @scala.inline
     def deleteSetHeaders: Self = this.set("setHeaders", js.undefined)
   }

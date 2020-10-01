@@ -413,7 +413,7 @@ object Printer {
             s"$params => ${formatTypeRef(indent)(retType)}"
 
           case TypeRef.ThisType(_)           => "this.type"
-          case TypeRef.Wildcard              => "_"
+          case TypeRef.Wildcard              => "?"
           case TypeRef.Singleton(underlying) => formatTypeRef(indent)(underlying) |+| ".type"
 
           case TypeRef.Intersection(types, _) =>

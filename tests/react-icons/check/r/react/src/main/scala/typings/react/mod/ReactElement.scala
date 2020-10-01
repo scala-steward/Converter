@@ -7,12 +7,12 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 trait ReactElement extends js.Object {
   var key: Key | Null = js.native
   var props: js.Any = js.native
-  var `type`: String | ComponentClass[_] = js.native
+  var `type`: String | ComponentClass[?] = js.native
 }
 
 object ReactElement {
   @scala.inline
-  def apply(props: js.Any, `type`: String | ComponentClass[_]): ReactElement = {
+  def apply(props: js.Any, `type`: String | ComponentClass[?]): ReactElement = {
     val __obj = js.Dynamic.literal(props = props.asInstanceOf[js.Any])
     __obj.updateDynamic("type")(`type`.asInstanceOf[js.Any])
     __obj.asInstanceOf[ReactElement]
@@ -31,7 +31,7 @@ object ReactElement {
     @scala.inline
     def setProps(value: js.Any): Self = this.set("props", value.asInstanceOf[js.Any])
     @scala.inline
-    def setType(value: String | ComponentClass[_]): Self = this.set("type", value.asInstanceOf[js.Any])
+    def setType(value: String | ComponentClass[?]): Self = this.set("type", value.asInstanceOf[js.Any])
     @scala.inline
     def setKey(value: Key): Self = this.set("key", value.asInstanceOf[js.Any])
     @scala.inline

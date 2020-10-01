@@ -45,12 +45,12 @@ package object optionsMod {
     */ typings.vue.vueStrings.RecordPropsDefinition & org.scalablytyped.runtime.TopLevel[T]
   type ThisTypedComponentOptionsWithArrayProps[V /* <: typings.vue.vueMod.Vue */, Data, Methods, Computed, PropNames /* <: java.lang.String */] = js.Object & (typings.vue.optionsMod.ComponentOptions[
     V, 
-    Data | (js.ThisFunction0[/* this */ (typings.std.Record[PropNames, _]) & V, Data]), 
+    Data | (js.ThisFunction0[/* this */ (typings.std.Record[PropNames, ?]) & V, Data]), 
     Methods, 
     Computed, 
     js.Array[PropNames]
   ]) & (typings.std.ThisType[
-    typings.vue.vueMod.CombinedVueInstance[V, Data, Methods, Computed, typings.std.Record[PropNames, _]]
+    typings.vue.vueMod.CombinedVueInstance[V, Data, Methods, Computed, typings.std.Record[PropNames, ?]]
   ])
   type ThisTypedComponentOptionsWithRecordProps[V /* <: typings.vue.vueMod.Vue */, Data, Methods, Computed, Props] = js.Object & (typings.vue.optionsMod.ComponentOptions[
     V, 

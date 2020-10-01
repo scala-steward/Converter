@@ -19,7 +19,7 @@ object SVGAttributes {
     __obj.asInstanceOf[SVGAttributes[T]]
   }
   @scala.inline
-  implicit class SVGAttributesOps[Self <: SVGAttributes[_], T] (val x: Self & SVGAttributes[T]) extends AnyVal {
+  implicit class SVGAttributesOps[Self <: SVGAttributes[?], T] (val x: Self & SVGAttributes[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

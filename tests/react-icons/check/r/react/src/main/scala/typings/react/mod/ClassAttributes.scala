@@ -15,7 +15,7 @@ object ClassAttributes {
     __obj.asInstanceOf[ClassAttributes[T]]
   }
   @scala.inline
-  implicit class ClassAttributesOps[Self <: ClassAttributes[_], T] (val x: Self & ClassAttributes[T]) extends AnyVal {
+  implicit class ClassAttributesOps[Self <: ClassAttributes[?], T] (val x: Self & ClassAttributes[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

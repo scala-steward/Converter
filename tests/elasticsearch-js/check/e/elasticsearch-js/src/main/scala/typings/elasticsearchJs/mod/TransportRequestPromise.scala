@@ -16,7 +16,7 @@ object TransportRequestPromise {
     __obj.asInstanceOf[TransportRequestPromise[T]]
   }
   @scala.inline
-  implicit class TransportRequestPromiseOps[Self <: TransportRequestPromise[_], T] (val x: Self & TransportRequestPromise[T]) extends AnyVal {
+  implicit class TransportRequestPromiseOps[Self <: TransportRequestPromise[?], T] (val x: Self & TransportRequestPromise[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline

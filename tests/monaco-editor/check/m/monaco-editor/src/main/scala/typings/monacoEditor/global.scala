@@ -32,7 +32,7 @@ object global extends js.Object {
     /* static members */
     @js.native
     object Promise extends js.Object {
-      def any[T](promises: js.Array[T | js.Thenable[T]]): typings.monacoEditor.monaco.Promise[Key[T], _] = js.native
+      def any[T](promises: js.Array[T | js.Thenable[T]]): typings.monacoEditor.monaco.Promise[Key[T], ?] = js.native
     }
     
   }

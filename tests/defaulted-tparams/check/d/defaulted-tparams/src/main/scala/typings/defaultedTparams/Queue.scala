@@ -34,7 +34,7 @@ object Queue {
     __obj.asInstanceOf[Queue[S, T]]
   }
   @scala.inline
-  implicit class QueueOps[Self <: Queue[_, _], S, T] (val x: Self & (Queue[S, T])) extends AnyVal {
+  implicit class QueueOps[Self <: Queue[?, ?], S, T] (val x: Self & (Queue[S, T])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline
