@@ -2,7 +2,6 @@ package typings.vue.vnodeMod
 
 import org.scalablytyped.runtime.NumberDictionary
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native

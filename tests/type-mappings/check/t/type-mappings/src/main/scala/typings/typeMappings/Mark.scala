@@ -3,7 +3,6 @@ package typings.typeMappings
 import typings.typeMappings.typeMappingsStrings.text
 import typings.typeMappings.typeMappingsStrings.trail
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 /* Rewritten from type alias, can be one of: 

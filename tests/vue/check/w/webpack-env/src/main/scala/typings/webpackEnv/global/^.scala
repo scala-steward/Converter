@@ -5,7 +5,6 @@ import typings.webpackEnv.NodeModule
 import typings.webpackEnv.NodeRequire
 import typings.webpackEnv.WebpackModuleApi.RequireLambda
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSGlobalScope

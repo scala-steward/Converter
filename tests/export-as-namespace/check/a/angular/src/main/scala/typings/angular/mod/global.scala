@@ -1,7 +1,6 @@
 package typings.angular.mod
 
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 // Support for painless dependency injection

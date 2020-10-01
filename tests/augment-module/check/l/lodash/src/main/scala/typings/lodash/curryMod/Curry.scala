@@ -3,7 +3,6 @@ package typings.lodash.curryMod
 import typings.lodash.mod.CurriedFunction1
 import typings.lodash.mod.CurriedFunction2
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native

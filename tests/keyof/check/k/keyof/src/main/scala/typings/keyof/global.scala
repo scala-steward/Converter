@@ -3,7 +3,6 @@ package typings.keyof
 import typings.keyof.keyofStrings.b
 import typings.keyof.keyofStrings.c
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSGlobalScope

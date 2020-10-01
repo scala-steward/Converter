@@ -2,7 +2,6 @@ package typings.rxjs
 
 import typings.rxjs.typesMod.SubscriptionLike
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("rxjs/internal/Subscription", JSImport.Namespace)

@@ -2,7 +2,6 @@ package typings.vueResource.vuejs
 
 import typings.vueResource.anon.HttpOptionsrootstring
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native

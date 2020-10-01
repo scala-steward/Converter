@@ -2,7 +2,6 @@ package typings.constEnum.mod
 
 import typings.constEnum.constEnumNumbers.`22`
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("const-enum", "bar")

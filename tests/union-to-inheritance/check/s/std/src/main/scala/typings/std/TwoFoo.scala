@@ -1,7 +1,6 @@
 package typings.std
 
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 /* let's pretend */
@@ -17,11 +16,11 @@ object TwoFoo {
     __obj.asInstanceOf[TwoFoo[Foo1, Foo2]]
   }
   @scala.inline
-  implicit class TwoFooOps[Self <: TwoFoo[_, _], Foo1, Foo2] (val x: Self with (TwoFoo[Foo1, Foo2])) extends AnyVal {
+  implicit class TwoFooOps[Self <: TwoFoo[_, _], Foo1, Foo2] (val x: Self & (TwoFoo[Foo1, Foo2])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline
-    def combineWith[Other <: js.Any](other: Other): Self with Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self with Other]
+    def combineWith[Other <: js.Any](other: Other): Self & Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self & Other]
     @scala.inline
     def set(key: String, value: js.Any): Self = {
         x.asInstanceOf[js.Dynamic].updateDynamic(key)(value)

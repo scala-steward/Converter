@@ -2,7 +2,6 @@ package typings.awsSdk.dynamodbMod
 
 import typings.awsSdk.documentClientMod.DocumentClient.DocumentClientOptions
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("aws-sdk/clients/dynamodb", "DocumentClient")
@@ -12,6 +11,6 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
   */
 class DocumentClient ()
   extends typings.awsSdk.documentClientMod.DocumentClient {
-  def this(options: DocumentClientOptions with ClientConfiguration) = this()
+  def this(options: DocumentClientOptions & ClientConfiguration) = this()
 }
 

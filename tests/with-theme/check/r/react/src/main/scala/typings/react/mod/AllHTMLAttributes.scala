@@ -1,7 +1,6 @@
 package typings.react.mod
 
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native
@@ -17,11 +16,11 @@ object AllHTMLAttributes {
     __obj.asInstanceOf[AllHTMLAttributes[T]]
   }
   @scala.inline
-  implicit class AllHTMLAttributesOps[Self <: AllHTMLAttributes[_], T] (val x: Self with AllHTMLAttributes[T]) extends AnyVal {
+  implicit class AllHTMLAttributesOps[Self <: AllHTMLAttributes[_], T] (val x: Self & AllHTMLAttributes[T]) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline
-    def combineWith[Other <: js.Any](other: Other): Self with Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self with Other]
+    def combineWith[Other <: js.Any](other: Other): Self & Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self & Other]
     @scala.inline
     def set(key: String, value: js.Any): Self = {
         x.asInstanceOf[js.Dynamic].updateDynamic(key)(value)

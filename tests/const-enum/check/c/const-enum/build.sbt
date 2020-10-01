@@ -1,6 +1,6 @@
 organization := "org.scalablytyped"
 name := "const-enum"
-version := "0.0-unknown-5bbb69"
+version := "0.0-unknown-e486e9"
 scalaVersion := "0.28.0-bin-20200925-f4528ce-NIGHTLY"
 enablePlugins(ScalaJSPlugin)
 libraryDependencies ++= Seq(

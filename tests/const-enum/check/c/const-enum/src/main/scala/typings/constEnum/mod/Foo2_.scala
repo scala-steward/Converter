@@ -4,7 +4,6 @@ import typings.constEnum.constEnumNumbers.`0`
 import typings.constEnum.constEnumNumbers.`1`
 import typings.constEnum.constEnumNumbers.`22`
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 /* Rewritten from type alias, can be one of: 

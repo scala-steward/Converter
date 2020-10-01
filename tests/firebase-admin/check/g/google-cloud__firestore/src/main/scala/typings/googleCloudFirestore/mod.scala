@@ -2,7 +2,6 @@ package typings.googleCloudFirestore
 
 import typings.googleCloudFirestore.FirebaseFirestore.Settings
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("@google-cloud/firestore", JSImport.Namespace)

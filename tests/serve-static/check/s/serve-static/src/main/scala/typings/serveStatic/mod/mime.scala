@@ -2,7 +2,6 @@ package typings.serveStatic.mod
 
 import typings.mime.mod.TypeMap
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("serve-static", "mime")

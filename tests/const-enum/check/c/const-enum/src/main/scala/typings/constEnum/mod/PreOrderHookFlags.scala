@@ -5,7 +5,6 @@ import typings.constEnum.constEnumNumbers.`16`
 import typings.constEnum.constEnumNumbers.`65535`
 import typings.constEnum.constEnumNumbers.`65536`
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 /* Rewritten from type alias, can be one of: 

@@ -54,7 +54,6 @@ object Printer {
 
   val Imports: String =
     """|import scala.scalajs.js
-       |import scala.scalajs.js.`|`
        |import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}""".stripMargin
 
   private final case class Indenter(a: Appendable) {
@@ -418,7 +417,7 @@ object Printer {
           case TypeRef.Singleton(underlying) => formatTypeRef(indent)(underlying) |+| ".type"
 
           case TypeRef.Intersection(types, _) =>
-            types.map(formatTypeRef(indent)).map(paramsIfNeeded).mkString(" with ")
+            types.map(formatTypeRef(indent)).map(paramsIfNeeded).mkString(" & ")
 
           case TypeRef.UndefOr(tpe, _) =>
             formatTypeRef(indent)(TypeRef(QualifiedName.UndefOr, IArray(tpe), NoComments))

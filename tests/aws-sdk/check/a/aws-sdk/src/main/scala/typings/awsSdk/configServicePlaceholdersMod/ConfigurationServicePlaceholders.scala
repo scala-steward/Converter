@@ -2,7 +2,6 @@ package typings.awsSdk.configServicePlaceholdersMod
 
 import typings.awsSdk.dynamodbMod.ClientConfiguration
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("aws-sdk/lib/config_service_placeholders", "ConfigurationServicePlaceholders")

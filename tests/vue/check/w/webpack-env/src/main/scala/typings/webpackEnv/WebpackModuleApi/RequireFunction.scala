@@ -4,7 +4,6 @@ import org.scalablytyped.runtime.StringDictionary
 import typings.std.RegExp
 import typings.webpackEnv.NodeRequire
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native

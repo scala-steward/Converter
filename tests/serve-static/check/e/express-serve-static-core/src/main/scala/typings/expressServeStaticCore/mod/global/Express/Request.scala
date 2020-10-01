@@ -1,7 +1,6 @@
 package typings.expressServeStaticCore.mod.global.Express
 
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 // These open interfaces may be extended in an application-specific manner via declaration merging.

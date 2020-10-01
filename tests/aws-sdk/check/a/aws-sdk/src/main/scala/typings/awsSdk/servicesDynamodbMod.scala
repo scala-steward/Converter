@@ -4,7 +4,6 @@ import org.scalablytyped.runtime.Instantiable1
 import typings.awsSdk.documentClientMod.DocumentClient.DocumentClientOptions
 import typings.awsSdk.dynamodbMod.ClientConfiguration
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("aws-sdk/lib/services/dynamodb", JSImport.Namespace)
@@ -21,7 +20,7 @@ object servicesDynamodbMod extends js.Object {
       * This abstraction annotates native JavaScript types supplied as input parameters, as well as converts annotated response data to native JavaScript types.
       */
     var DocumentClient: Instantiable1[
-        /* options */ js.UndefOr[DocumentClientOptions with ClientConfiguration], 
+        /* options */ js.UndefOr[DocumentClientOptions & ClientConfiguration], 
         typings.awsSdk.documentClientMod.DocumentClient
       ] = js.native
   }

@@ -2,7 +2,6 @@ package typings.mime
 
 import typings.mime.mod.TypeMap
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("mime/Mime", JSImport.Namespace)

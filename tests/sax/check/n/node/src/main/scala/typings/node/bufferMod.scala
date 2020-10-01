@@ -5,7 +5,6 @@ import org.scalablytyped.runtime.Instantiable2
 import typings.std.ArrayBuffer
 import typings.std.Uint8Array
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 /************************************************

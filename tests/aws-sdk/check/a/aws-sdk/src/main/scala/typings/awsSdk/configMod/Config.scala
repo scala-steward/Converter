@@ -2,7 +2,6 @@ package typings.awsSdk.configMod
 
 import typings.awsSdk.configServicePlaceholdersMod.ConfigurationServicePlaceholders
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("aws-sdk/lib/config", "Config")
@@ -12,7 +11,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
   * This is the object that passes option data along to service requests, including credentials, security, region information, and some service specific settings.
   */
 class Config () extends js.Object {
-  def this(options: ConfigurationServicePlaceholders with APIVersions) = this()
+  def this(options: ConfigurationServicePlaceholders & APIVersions) = this()
   /**
     * Loads configuration data from a JSON file into this config object.
     * Loading configuration willr eset all existing configuration on the object.
@@ -20,6 +19,6 @@ class Config () extends js.Object {
     *
     * @param {string} path - the path relative to your process's current working directory to load configuration from.
     */
-  def loadFromPath(path: String): Config with ConfigurationServicePlaceholders with APIVersions = js.native
+  def loadFromPath(path: String): Config & ConfigurationServicePlaceholders & APIVersions = js.native
 }
 

@@ -4,7 +4,6 @@ import typings.constEnum.mod.Foo2_
 import typings.constEnum.mod.Foo_
 import typings.constEnum.mod.PreOrderHookFlags
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 object constEnumNumbers {

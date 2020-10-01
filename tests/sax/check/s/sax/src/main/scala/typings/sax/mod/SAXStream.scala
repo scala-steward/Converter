@@ -2,7 +2,6 @@ package typings.sax.mod
 
 import typings.node.streamMod.Duplex
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("sax", "SAXStream")

@@ -1,7 +1,6 @@
 package typings.fpTs.hktMod
 
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native
@@ -17,11 +16,11 @@ object HKT {
     __obj.asInstanceOf[HKT[URI, A]]
   }
   @scala.inline
-  implicit class HKTOps[Self <: HKT[_, _], URI, A] (val x: Self with (HKT[URI, A])) extends AnyVal {
+  implicit class HKTOps[Self <: HKT[_, _], URI, A] (val x: Self & (HKT[URI, A])) extends AnyVal {
     @scala.inline
     def duplicate: Self = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x)).asInstanceOf[Self]
     @scala.inline
-    def combineWith[Other <: js.Any](other: Other): Self with Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self with Other]
+    def combineWith[Other <: js.Any](other: Other): Self & Other = (js.Dynamic.global.Object.assign(js.Dynamic.literal(), x, other.asInstanceOf[js.Any])).asInstanceOf[Self & Other]
     @scala.inline
     def set(key: String, value: js.Any): Self = {
         x.asInstanceOf[js.Dynamic].updateDynamic(key)(value)

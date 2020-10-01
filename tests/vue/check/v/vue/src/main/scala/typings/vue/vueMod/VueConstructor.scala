@@ -20,7 +20,6 @@ import typings.vue.optionsMod.ThisTypedComponentOptionsWithRecordProps
 import typings.vue.pluginMod.PluginFunction
 import typings.vue.pluginMod.PluginObject
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @js.native

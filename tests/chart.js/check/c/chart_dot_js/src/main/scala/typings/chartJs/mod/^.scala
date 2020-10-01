@@ -7,7 +7,6 @@ import typings.std.ArrayLike
 import typings.std.CanvasRenderingContext2D
 import typings.std.HTMLCanvasElement
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("chart.js", JSImport.Namespace)

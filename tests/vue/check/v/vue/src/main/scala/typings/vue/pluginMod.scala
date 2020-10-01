@@ -4,7 +4,6 @@ import org.scalablytyped.runtime.StringDictionary
 import typings.vue.vueMod.Vue
 import typings.vue.vueMod.VueConstructor
 import scala.scalajs.js
-import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
 @JSImport("vue/types/plugin", JSImport.Namespace)
