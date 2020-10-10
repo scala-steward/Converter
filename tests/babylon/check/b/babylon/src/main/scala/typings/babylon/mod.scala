@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 object mod extends js.Object {
   @js.native
   class RuntimeAnimation ()
-    extends typings.babylon.originalMod.RuntimeAnimation
+    extends typings.babylon.indexMod.RuntimeAnimation
   
 }
 
