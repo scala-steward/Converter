@@ -4,7 +4,6 @@ import slinky.core.ReactComponentClass
 import slinky.core.facade.ReactRef
 import typingsSlinky.stardustUiReactComponentRef.anon.Children
 import typingsSlinky.stardustUiReactComponentRef.anon.InnerRef
-import typingsSlinky.stardustUiReactComponentRef.refFindNodeMod.default
 import typingsSlinky.stardustUiReactComponentRef.typesMod.RefProps
 import scala.scalajs.js
 import scala.scalajs.js.`|`
@@ -14,11 +13,12 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 @js.native
 object mod extends js.Object {
   @js.native
-  class RefFindNode () extends default
+  class RefFindNode ()
+    extends typingsSlinky.stardustUiReactComponentRef.refFindNodeMod.RefFindNode
   
   @js.native
   class RefForward ()
-    extends typingsSlinky.stardustUiReactComponentRef.refForwardMod.default
+    extends typingsSlinky.stardustUiReactComponentRef.refForwardMod.RefForward
   
   val Ref: ReactComponentClass[RefProps] = js.native
   /**

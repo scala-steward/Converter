@@ -1,7 +1,9 @@
 package typingsSlinky.reactBootstrap
 
+import typingsSlinky.react.mod.Component
 import typingsSlinky.reactBootstrap.bootstrapUtilsMod.BSProps
-import typingsSlinky.reactBootstrap.buttonGroupMod.^
+import typingsSlinky.reactBootstrap.buttonGroupMod.ButtonGroupProps
+import typingsSlinky.reactBootstrap.toggleButtonGroupMod.ToggleButtonGroupProps
 import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
@@ -10,11 +12,12 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 @js.native
 object libMod extends js.Object {
   @js.native
-  class ButtonGroup () extends ^
+  class ButtonGroup ()
+    extends Component[ButtonGroupProps, js.Object, js.Any]
   
   @js.native
   class ToggleButtonGroup ()
-    extends typingsSlinky.reactBootstrap.toggleButtonGroupMod.^
+    extends Component[ToggleButtonGroupProps, js.Object, js.Any]
   
   @js.native
   object utils extends js.Object {

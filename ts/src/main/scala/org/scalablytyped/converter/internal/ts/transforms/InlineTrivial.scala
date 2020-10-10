@@ -14,7 +14,10 @@ object InlineTrivial extends TreeTransformationScopedChanges {
   override def enterTsTypeRef(scope: TsTreeScope)(x: TsTypeRef): TsTypeRef =
     rewritten(scope, x.name).map(newName => x.copy(name = newName)).getOrElse(x)
 
-  def rewritten(scope: TsTreeScope, current: TsQIdent): Option[TsQIdent] =
+  def rewritten(scope: TsTreeScope, current: TsQIdent): Option[TsQIdent] = {
+//    if (TsTypeFormatter.qident(current) === "@aws-cdk/core.@aws-cdk/core.Construct") {
+//      print(1)
+//    }
     scope.lookupTypeIncludeScope(current).firstDefined {
       case (TsDeclEnum(_, _, _, _, _, _, Some(exportedFrom), _, _), _) =>
         Some(exportedFrom.name)
@@ -27,8 +30,10 @@ object InlineTrivial extends TreeTransformationScopedChanges {
           case IArray.exactlyOne(one) => Some(one)
           case more                   => more.find(_.name.parts.last === next.name)
         }
-
-        nextParentOpt.flatMap(p => rewritten(nextScope, p.name)).orElse(Some(current)) // commit
+        nextParentOpt match {
+          case Some(nextParent) => rewritten(nextScope, nextParent.name).orElse(Some(nextParent.name))
+          case None => Some(current)
+        }
 
       case (NameFromTypeAlias(nextName), nextScope) =>
         rewritten(nextScope, nextName)
@@ -67,6 +72,7 @@ object InlineTrivial extends TreeTransformationScopedChanges {
 
       case _ => None
     }
+  }
 
   /* bugfix for a case where we have ended up combining two types which are structurally equal */
   object NameFromTypeAlias {
