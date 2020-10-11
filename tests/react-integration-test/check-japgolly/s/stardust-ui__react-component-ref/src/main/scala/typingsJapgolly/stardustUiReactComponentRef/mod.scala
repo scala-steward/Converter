@@ -4,6 +4,7 @@ import japgolly.scalajs.react.raw.React.RefHandle
 import typingsJapgolly.react.mod.FunctionComponent
 import typingsJapgolly.stardustUiReactComponentRef.anon.Children
 import typingsJapgolly.stardustUiReactComponentRef.anon.InnerRef
+import typingsJapgolly.stardustUiReactComponentRef.refFindNodeMod.default
 import typingsJapgolly.stardustUiReactComponentRef.typesMod.RefProps
 import scala.scalajs.js
 import scala.scalajs.js.`|`
@@ -13,12 +14,11 @@ import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, J
 @js.native
 object mod extends js.Object {
   @js.native
-  class RefFindNode ()
-    extends typingsJapgolly.stardustUiReactComponentRef.refFindNodeMod.RefFindNode
+  class RefFindNode () extends default
   
   @js.native
   class RefForward ()
-    extends typingsJapgolly.stardustUiReactComponentRef.refForwardMod.RefForward
+    extends typingsJapgolly.stardustUiReactComponentRef.refForwardMod.default
   
   val Ref: FunctionComponent[RefProps] = js.native
   /**

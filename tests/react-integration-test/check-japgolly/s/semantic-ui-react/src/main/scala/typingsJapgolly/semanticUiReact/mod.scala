@@ -3,7 +3,6 @@ package typingsJapgolly.semanticUiReact
 import typingsJapgolly.react.mod.StatelessComponent
 import typingsJapgolly.semanticUiReact.buttonContentMod.ButtonContentProps
 import typingsJapgolly.semanticUiReact.buttonGroupMod.ButtonGroupProps
-import typingsJapgolly.semanticUiReact.buttonMod.Button
 import typingsJapgolly.semanticUiReact.buttonOrMod.ButtonOrProps
 import scala.scalajs.js
 import scala.scalajs.js.`|`
@@ -21,7 +20,8 @@ object mod extends js.Object {
   }
   
   @js.native
-  class default () extends Button
+  class default ()
+    extends typingsJapgolly.semanticUiReact.buttonMod.default
   
 }
 

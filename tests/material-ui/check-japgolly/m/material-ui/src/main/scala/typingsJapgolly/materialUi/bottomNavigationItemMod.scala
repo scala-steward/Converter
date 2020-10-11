@@ -14,8 +14,7 @@ object bottomNavigationItemMod extends js.Object {
     extends Component[BottomNavigationItemProps, js.Object]
   
   @js.native
-  class default ()
-    extends Component[BottomNavigationItemProps, js.Object]
+  class default () extends BottomNavigationItem
   
 }
 

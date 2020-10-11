@@ -16,14 +16,8 @@ object KeepTypesOnly {
 
   def named(x: TsNamedDecl): Option[TsNamedDecl] = x match {
     case _: TsDeclVar | _: TsDeclFunction => None
-    case cls@TsDeclClass(comments, declared, _, name, tparams, _, _, members, _, _) =>
-      val nonStatics: IArray[TsMember] =
-        members.filterNot {
-          case _:  TsMemberCtor     => true
-          case xx: TsMemberProperty => xx.isStatic
-          case xx: TsMemberFunction => xx.isStatic || xx.name === TsIdent.constructor
-          case _ => false
-        }
+    case cls @ TsDeclClass(comments, declared, _, name, tparams, _, _, members, _, _) =>
+      val nonStatics = members.filterNot(TsMember.isStaticOrCtor)
 
       Some(
         TsDeclInterface(

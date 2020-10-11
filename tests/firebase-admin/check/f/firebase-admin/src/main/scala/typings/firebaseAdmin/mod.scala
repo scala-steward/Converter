@@ -20,8 +20,8 @@ object mod extends js.Object {
       def this(settings: Settings) = this()
     }
     
-    def apply(): typings.googleCloudFirestore.FirebaseFirestore.Firestore = js.native
-    def apply(str: String): typings.googleCloudFirestore.FirebaseFirestore.Firestore = js.native
+    def apply(): Firestore = js.native
+    def apply(str: String): Firestore = js.native
   }
   
 }

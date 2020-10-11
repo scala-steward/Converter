@@ -4,7 +4,7 @@ import typings.awsSdk.documentClientMod.DocumentClient.ConverterOptions
 import typings.awsSdk.documentClientMod.DocumentClient.DocumentClientOptions
 import typings.awsSdk.dynamodbMod.AttributeValue
 import typings.awsSdk.dynamodbMod.ClientConfiguration
-import typings.awsSdk.servicesDynamodbMod.DynamoDBCustomizations
+import typings.awsSdk.dynamodbMod.^
 import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
@@ -23,21 +23,21 @@ object allMod extends js.Object {
     
     @js.native
     class Converter ()
-      extends typings.awsSdk.converterMod.Converter
+      extends typings.awsSdk.dynamodbMod.Converter
     
     @js.native
     /**
       * Creates a DynamoDB document client with a set of configuration options.
       */
     class DocumentClient ()
-      extends typings.awsSdk.documentClientMod.DocumentClient {
+      extends typings.awsSdk.dynamodbMod.DocumentClient {
       def this(options: DocumentClientOptions with ClientConfiguration) = this()
     }
     
   }
   
   @js.native
-  class DynamoDB () extends DynamoDBCustomizations {
+  class DynamoDB () extends ^ {
     def this(options: ClientConfiguration) = this()
   }
   
