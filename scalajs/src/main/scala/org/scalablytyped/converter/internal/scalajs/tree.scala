@@ -115,7 +115,7 @@ sealed trait MemberTree extends Tree with HasCodePath with HasAnnotations {
   val isOverride: Boolean
   def withCodePath(newCodePath: QualifiedName): MemberTree
 
-  def renamed(newName: Name): MemberTree
+  def renamed(newName: Name, nativeOwner: Boolean): MemberTree
   def originalName: Name
 }
 
@@ -129,16 +129,16 @@ final case class FieldTree(
     comments:    Comments,
     codePath:    QualifiedName,
 ) extends MemberTree {
-  def withSuffix[T: ToSuffix](t: T): FieldTree =
-    renamed(name.withSuffix(t))
+  def withSuffix[T: ToSuffix](t: T, nativeOwner: Boolean): FieldTree =
+    renamed(name.withSuffix(t), nativeOwner)
 
   def originalName: Name =
     annotations.collectFirst { case Annotation.JsName(name) => name }.getOrElse(name)
 
-  def renamed(newName: Name): FieldTree =
+  def renamed(newName: Name, nativeOwner: Boolean): FieldTree =
     copy(
       name        = newName,
-      annotations = Annotation.renamedFrom(name)(annotations),
+      annotations = if (nativeOwner) Annotation.renamedFrom(name)(annotations) else annotations,
       isOverride  = false,
       codePath    = QualifiedName(codePath.parts.init :+ newName),
     )
@@ -159,16 +159,16 @@ final case class MethodTree(
     codePath:    QualifiedName,
     isImplicit:  Boolean,
 ) extends MemberTree {
-  def withSuffix[T: ToSuffix](t: T): MethodTree =
-    renamed(name.withSuffix(t))
+  def withSuffix[T: ToSuffix](t: T, nativeOwner: Boolean): MethodTree =
+    renamed(name.withSuffix(t), nativeOwner)
 
   def originalName: Name =
     annotations.collectFirst { case Annotation.JsName(name) => name }.getOrElse(name)
 
-  def renamed(newName: Name): MethodTree =
+  def renamed(newName: Name, nativeOwner: Boolean): MethodTree =
     copy(
       name        = newName,
-      annotations = Annotation.renamedFrom(name)(annotations),
+      annotations = if (nativeOwner) Annotation.renamedFrom(name)(annotations) else annotations,
       isOverride  = false,
       codePath    = QualifiedName(codePath.parts.init :+ newName),
     )

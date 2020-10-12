@@ -130,7 +130,7 @@ class ParentsResolver {
   def apply(scope: TreeScope, tree: InheritanceTree): Parents =
     apply(scope, findParentRefs(tree), typeParams(tree))
 
-  @deprecated
+  @deprecated("", "")
   def apply(scope: TreeScope, parentRefs: IArray[TypeRef]): Parents =
     apply(scope, parentRefs, Empty)
 

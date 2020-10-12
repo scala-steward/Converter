@@ -18,6 +18,7 @@ final class GenCompanions(findProps: FindProps, enableLongApplyMethod: Boolean) 
       def nameConflict(name: Name): Boolean =
         container.index.getOrElse(name, Empty).exists {
           case _: ContainerTree => true
+          case _: MemberTree    => true
           case _ => false
         }
 

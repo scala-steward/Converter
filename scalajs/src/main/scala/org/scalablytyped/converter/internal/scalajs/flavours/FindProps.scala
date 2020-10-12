@@ -192,7 +192,8 @@ final class FindProps(
               }
               .groupBy(x => realNameFrom(x.annotations, x.name))
               .collect {
-                case (name, ms) if name =/= Name.APPLY && name =/= Name.namespaced => name -> combine(ms).renamed(name)
+                case (name, ms) if name =/= Name.APPLY && name =/= Name.namespaced =>
+                  name -> combine(ms).renamed(name, cls.isNative)
               }
 
           val ownProps: Map[Name, Prop] =

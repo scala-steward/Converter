@@ -2,31 +2,27 @@ package org.scalablytyped.converter.internal
 package scalajs
 package transforms
 
-import org.scalablytyped.converter.internal.maps._
-import cats.data.Ior
-import cats.instances.list._
-import cats.syntax.alternative._
+import org.scalablytyped.converter.internal.scalajs.ExprTree._
 
 import scala.collection.mutable
 
 object ContainerPolicy extends TreeTransformation {
-  /* sneak import annotations through fields/methods which otherwise don't have them */
-  case class ClassAnnotations(value: IArray[Annotation]) extends Comment.Data
+  case object Passthrough extends Comment.Data
 
-  override def leaveContainerTree(scope: TreeScope)(_s: ContainerTree): ContainerTree = {
-    val s = combineModules(_s)
-
+  override def leaveContainerTree(scope: TreeScope)(s: ContainerTree): ContainerTree = {
     val classesToRename = mutable.ArrayBuffer.empty[QualifiedName]
 
-    val rewrittenContainers = s.members.map {
-      case pkg: PackageTree => moveMemberTreesIntoHatObject(pkg, Empty)
+    val rewrittenMembers = s.members.map {
+      case pkg: PackageTree => forwarders(pkg, Empty)
+      case mod: ModuleTree if mod.comments.has[Passthrough.type] || !mod.isNative => mod
       case mod: ModuleTree =>
         Action(scope, mod) match {
           case Action.RemainModule =>
-            mod.withMembers(mod.members.map(stripLocationAnns))
+            forwardersMod(mod)
+
           case Action.ConvertToPackage(renameClassOpt) =>
             renameClassOpt.foreach(classesToRename.+=)
-            moveMemberTreesIntoHatObject(
+            forwarders(
               PackageTree(mod.annotations, mod.name, mod.members, mod.comments, mod.codePath),
               mod.parents,
             )
@@ -34,7 +30,7 @@ object ContainerPolicy extends TreeTransformation {
       case other => other
     }
 
-    val rewritten = rewrittenContainers.flatMap {
+    val rewrittenClasses = rewrittenMembers.flatMap {
       case cls: ClassTree if classesToRename.contains(cls.codePath) =>
         val renamedClass = cls.withSuffix("")
         IArray(
@@ -52,9 +48,9 @@ object ContainerPolicy extends TreeTransformation {
 
     val isTopLevel = scope.stack.length < 3 // typings, libName
     if (isTopLevel)
-      moveMemberTreesIntoHatObject(PackageTree(s.annotations, s.name, rewritten, s.comments, s.codePath), Empty)
+      forwarders(PackageTree(s.annotations, s.name, rewrittenClasses, s.comments, s.codePath), Empty)
     else
-      s.withMembers(rewritten)
+      s.withMembers(rewrittenClasses)
   }
 
   sealed trait Action
@@ -76,49 +72,6 @@ object ContainerPolicy extends TreeTransformation {
         case _ => false
       }
 
-      def containsIllegal = mod.members.exists {
-        case x: ClassTree =>
-          x.receivesCompanion
-        case x: ModuleTree =>
-          x.annotations.isEmpty
-        case _ => false
-      }
-
-      // avoid `object A extends A.B {trait B}`
-      def inheritsFromMember = {
-        def illegal(typeRef: TypeRef): Boolean = {
-          val isLonger = typeRef.typeName.parts.length > mod.codePath.parts.length
-          val isInside = typeRef.typeName.parts.startsWith(mod.codePath.parts)
-          (isLonger && isInside) || typeRef.targs.exists(illegal)
-        }
-
-        mod.parents.exists(illegal)
-      }
-
-      def requiresCustomImport = {
-        def check(anns: IArray[Annotation], name: Name) =
-          anns.exists {
-            case Annotation.JsGlobalScope           => true
-            case Annotation.JsImport(_, _, Some(_)) => true
-            case Annotation.JsImport(_, i, _) =>
-              i match {
-                case Imported.Namespace => true
-                case Imported.Default   => name =/= Name.Default
-                case Imported.Named(x)  => x.last =/= name
-              }
-            case Annotation.JsGlobal(x) => x.parts.last =/= name
-            case _                      => false
-          }
-
-        mod.members.exists {
-          case x: InheritanceTree => check(x.annotations, x.name)
-          case x: ContainerTree   => check(x.annotations, x.name)
-          case x: FieldTree       => check(x.annotations, x.name)
-          case x: MethodTree      => check(x.annotations, x.name)
-          case _ => false
-        }
-      }
-
       def tooBig = {
         def countClasses(x: ContainerTree): Int =
           x.members.foldLeft(0) {
@@ -131,108 +84,188 @@ object ContainerPolicy extends TreeTransformation {
         else countClasses(mod) > 20
       }
 
-      if (containsPackage || containsIllegal || inheritsFromMember || requiresCustomImport || tooBig)
-        Action.ConvertToPackage(existsClassWithSameName(scope, mod.name))
+      if (containsPackage || tooBig) Action.ConvertToPackage(existsClassWithSameName(scope, mod.name))
       else Action.RemainModule
     }
   }
 
-  def stripLocationAnns(tree: Tree): Tree = {
-    def filterAnns(anns: IArray[Annotation]): IArray[Annotation] =
-      anns.filter {
-        case Annotation.JsNative          => true
-        case Annotation.ScalaJSDefined    => true
-        case Annotation.JsGlobalScope     => false
-        case Annotation.JsName(_)         => false
-        case Annotation.JsImport(_, _, _) => false
-        case Annotation.JsGlobal(_)       => false
-        case Annotation.Inline            => false
-      }
+  def forwarders[C <: ContainerTree](c: C, inheritance: IArray[TypeRef]): C = {
+    val hatCp = c.codePath + Name.namespaced
 
-    tree match {
-      case x: PackageTree => x.copy(annotations = filterAnns(x.annotations))
-      case x: ModuleTree  => x.copy(annotations = filterAnns(x.annotations))
-      case x: ClassTree   => x.copy(annotations = filterAnns(x.annotations))
-      case x => x
-    }
-  }
+    val (members, rest) = c.members.partitionCollect { case x: MemberTree => x }
 
-  def moveMemberTreesIntoHatObject(s: ContainerTree, inheritance: IArray[TypeRef]): ContainerTree = {
-    val hatCp = s.codePath + Name.namespaced
+    val isGlobal = c.annotations.contains(Annotation.JsGlobalScope)
 
-    s.members.partitionCollect { case x: MemberTree => x } match {
-      case (Empty, _) if inheritance.isEmpty => s
-      case (members, rest) =>
-        val rewritten: IArray[Ior[MemberTree, ModuleTree]] =
-          members.zip(members.map(_.comments.extract { case ClassAnnotations(anns) => anns })).map {
-            case (f @ FieldTree(_, name, tpe, _, isReadonly, isOverride, _, codePath), extracted) =>
-              extracted match {
-                case Some((anns, restCs)) if tpe.typeName =/= QualifiedName.THIS =>
-                  val mod = ModuleTree(anns, name, IArray(TypeRef.TopLevel(tpe)), Empty, restCs, codePath, isOverride)
-                  if (isReadonly) Ior.Right(mod)
-                  else Ior.Both(f, mod)
-                case _ =>
-                  Ior.Left(f)
-              }
+    val dynamicRef: ExprTree =
+      if (isGlobal) Ref(QualifiedName.DynamicGlobal)
+      else Cast(Ref(hatCp), TypeRef.Dynamic)
 
-            case (m: MethodTree, extracted) =>
-              extracted match {
-                case Some((anns, restCs)) if m.name =/= Name.APPLY =>
-                  val asApply =
-                    m.copy(
-                      annotations = Empty,
-                      name        = Name.APPLY,
-                      codePath    = m.codePath + Name.APPLY,
-                      comments    = restCs,
-                    )
-                  Ior.Right(ModuleTree(anns, m.name, Empty, IArray(asApply), NoComments, m.codePath, m.isOverride))
-                case _ =>
-                  Ior.Left(m)
-              }
-            case (other, _) => Ior.Left(other)
+    val forwarders = members.flatMap {
+      case m: MethodTree =>
+        val impl = {
+          def call(params: IArray[Arg]) = m.originalName match {
+            case Name.APPLY =>
+              Call(Select(dynamicRef, Name("apply")), IArray(params))
+            case name =>
+              Call(Select(dynamicRef, Name("applyDynamic")), IArray(IArray(StringLit(name.unescaped)), params))
           }
 
-        //todo just inline this method
-        val (mutables, hoisted) = rewritten.toList.separate
+          Cast(call(m.params.flatten.map(p => Cast(Ref(p.name), TypeRef.Any))), m.resultType)
+        }
 
-        val hatModule =
-          setCodePath(
-            hatCp,
-            ModuleTree(
-              s.annotations,
-              Name.namespaced,
-              inheritance,
-              IArray.fromTraversable(mutables),
-              NoComments,
-              hatCp,
-              isOverride = false,
-            ),
+        IArray(
+          MethodTree(
+            annotations = IArray(Annotation.Inline),
+            level       = ProtectionLevel.Default,
+            name        = m.name,
+            tparams     = m.tparams,
+            params      = m.params,
+            impl        = impl,
+            resultType  = m.resultType,
+            isOverride  = false,
+            comments    = m.comments,
+            codePath    = m.codePath,
+            isImplicit  = false,
+          ),
+        )
+      case f: FieldTree if f.tpe.typeName === QualifiedName.THIS => Empty
+      case f: FieldTree =>
+        val getter = {
+          val impl = Cast(
+            Call(Select(dynamicRef, Name("selectDynamic")), IArray(IArray(StringLit(f.originalName.unescaped)))),
+            f.tpe,
           )
-        combineModules(s.withMembers(rest ++ IArray.fromTraversable(hoisted) :+ hatModule))
+          MethodTree(
+            annotations = IArray(Annotation.Inline),
+            level       = ProtectionLevel.Default,
+            name        = f.name,
+            tparams     = Empty,
+            params      = Empty,
+            impl        = impl,
+            resultType  = f.tpe,
+            isOverride  = false,
+            comments    = f.comments,
+            codePath    = f.codePath,
+            isImplicit  = false,
+          )
+        }
+
+        val setterOpt =
+          if (f.isReadOnly) None
+          else {
+            val xParam = ParamTree(Name("x"), isImplicit = false, isVal = false, f.tpe, NotImplemented, NoComments)
+
+            val impl = Call(
+              Select(dynamicRef, Name("updateDynamic")),
+              IArray(IArray(StringLit(f.originalName.unescaped)), IArray(Cast(Ref(xParam.name), TypeRef.Any))),
+            )
+
+            val m = MethodTree(
+              annotations = IArray(Annotation.Inline),
+              level       = ProtectionLevel.Default,
+              name        = Name(f.name.unescaped + "_="),
+              tparams     = Empty,
+              params      = IArray(IArray(xParam)),
+              impl        = impl,
+              resultType  = TypeRef.Unit,
+              isOverride  = false,
+              comments    = NoComments,
+              codePath    = f.codePath,
+              isImplicit  = false,
+            )
+
+            Some(m)
+          }
+        IArray.fromOptions(Some(getter), setterOpt)
     }
+
+    val hatModuleOpt =
+      if ((forwarders.isEmpty && inheritance.isEmpty) || isGlobal) None
+      else
+        Some(
+          ModuleTree(
+            annotations = c.annotations,
+            name        = Name.namespaced,
+            parents     = inheritance,
+            members     = Empty,
+            comments    = NoComments,
+            codePath    = hatCp,
+            isOverride  = false,
+          ),
+        )
+
+    c.withMembers(rest ++ forwarders ++ IArray.fromOption(hatModuleOpt)).asInstanceOf[C]
   }
 
-  def combineModules(s: ContainerTree): ContainerTree = {
-    val withCombinedModules: IArray[Tree] =
-      s.index.flatMapToIArray {
-        case (_, ts) =>
-          val (mods, rest) = ts.partitionCollect { case x: ModuleTree => x }
-          val combinedModules: Option[ModuleTree] =
-            mods.reduceOption { (mod1, mod2) =>
-              ModuleTree(
-                annotations = mod1.annotations,
-                name        = mod1.name,
-                parents     = (mod1.parents ++ mod2.parents).distinct,
-                members     = (mod1.members ++ mod2.members).distinct,
-                comments    = mod1.comments ++ mod2.comments,
-                codePath    = mod1.codePath,
-                isOverride  = false,
-              )
-            }
+  def forwardersMod(mod: ModuleTree): ModuleTree = {
+    val isGlobal = mod.annotations.contains(Annotation.JsGlobalScope)
+    val hatCp    = mod.codePath + Name.namespaced
 
-          rest ++ IArray.fromOption(combinedModules)
+    val dynamicRef: ExprTree =
+      if (isGlobal) Ref(QualifiedName.DynamicGlobal)
+      else Cast(Ref(Name.namespaced), TypeRef.Dynamic)
+
+    val setters: IArray[MethodTree] = mod.members.collect {
+      case f: FieldTree if !f.isReadOnly =>
+        val xParam = ParamTree(Name("x"), isImplicit = false, isVal = false, f.tpe, NotImplemented, NoComments)
+
+        val impl = Call(
+          Select(dynamicRef, Name("updateDynamic")),
+          IArray(IArray(StringLit(f.originalName.unescaped)), IArray(Cast(Ref(xParam.name), TypeRef.Any))),
+        )
+
+        MethodTree(
+          annotations = IArray(Annotation.Inline),
+          level       = ProtectionLevel.Default,
+          name        = Name(f.name.unescaped + "_="),
+          tparams     = Empty,
+          params      = IArray(IArray(xParam)),
+          impl        = impl,
+          resultType  = TypeRef.Unit,
+          isOverride  = false,
+          comments    = NoComments,
+          codePath    = f.codePath,
+          isImplicit  = false,
+        )
+    }
+
+    val rewrittenMembers: IArray[Tree] =
+      mod.members.map {
+        case m: MethodTree =>
+          m.copy(annotations = m.annotations.filterNot(_.isInstanceOf[Annotation.JsName]))
+        case f: FieldTree =>
+          f.copy(annotations = f.annotations.filterNot(_.isInstanceOf[Annotation.JsName]), isReadOnly = true)
+        case other =>
+          other
       }
 
-    s.withMembers(withCombinedModules)
+    val hatModuleOpt: Option[FieldTree] = {
+      val tpe = TypeRef.Intersection(mod.parents, NoComments) match {
+        case TypeRef.Nothing => TypeRef.Any
+        case other           => other
+      }
+
+      if ((tpe === TypeRef.Any && setters.isEmpty) || isGlobal) None
+      else {
+        Some(
+          FieldTree(
+            annotations = mod.annotations,
+            name        = Name.namespaced,
+            tpe         = tpe,
+            impl        = ExprTree.native,
+            isReadOnly  = true,
+            isOverride  = false,
+            comments    = NoComments,
+            codePath    = hatCp,
+          ),
+        )
+      }
+    }
+
+    mod.copy(
+      annotations = Empty,
+      parents     = Empty,
+      members     = rewrittenMembers ++ setters ++ IArray.fromOption(hatModuleOpt),
+    )
   }
 }

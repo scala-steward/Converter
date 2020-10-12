@@ -23,8 +23,8 @@ object CombineOverloads extends TreeTransformation {
     )
 
     s.copy(
-      ctors   = ctorHack(scope, s.ctors),
-      members = combineOverloads(scope, methods) ++ unifyFields(fields),
+      ctors   = ctorHack(scope, s.ctors, s.isNative),
+      members = combineOverloads(scope, methods, s.isNative) ++ unifyFields(fields),
     )
   }
 
@@ -34,7 +34,7 @@ object CombineOverloads extends TreeTransformation {
       { case x: FieldTree  => x },
     )
 
-    s.copy(members = rest ++ unifyFields(fields) ++ combineOverloads(scope, methods))
+    s.copy(members = rest ++ unifyFields(fields) ++ combineOverloads(scope, methods, s.isNative))
   }
 
   override def leavePackageTree(scope: TreeScope)(s: PackageTree): PackageTree = {
@@ -42,12 +42,13 @@ object CombineOverloads extends TreeTransformation {
       { case x: MethodTree => x },
       { case x: FieldTree  => x },
     )
-    s.copy(members = rest ++ unifyFields(fields) ++ combineOverloads(scope, methods))
+    s.copy(members = rest ++ unifyFields(fields) ++ combineOverloads(scope, methods, nativeOwner = false))
   }
 
   private def combineSameErasureSameTypeParams(
       methods:      IArray[MethodTree],
       renameSuffix: Option[Suffix],
+      nativeOwner:  Boolean,
   ): MethodTree = {
     if (methods.map(_.params.map(_.length: Integer)).toSet.size =/= 1) {
       sys.error("Methods do not have same shape: " + methods)
@@ -68,11 +69,15 @@ object CombineOverloads extends TreeTransformation {
     )
 
     renameSuffix.foldLeft(combined) {
-      case (ret, suffix) => ret.withSuffix(suffix)
+      case (ret, suffix) => ret.withSuffix(suffix, nativeOwner)
     }
   }
 
-  private def combineSameErasure(_methods: IArray[MethodTree], scope: TreeScope): IArray[MethodTree] = {
+  private def combineSameErasure(
+      _methods:    IArray[MethodTree],
+      scope:       TreeScope,
+      nativeOwner: Boolean,
+  ): IArray[MethodTree] = {
     val grouped: IArray[((IArray[TypeParamTree], QualifiedName), IArray[MethodTree])] =
       _methods
         .groupBy(m => (m.tparams, m.resultType.typeName))
@@ -80,7 +85,7 @@ object CombineOverloads extends TreeTransformation {
         .sortBy(_._1._1.length)
 
     val default: MethodTree =
-      combineSameErasureSameTypeParams(grouped.head._2, None)
+      combineSameErasureSameTypeParams(grouped.head._2, None, nativeOwner)
 
     val suffixed: IArray[MethodTree] =
       grouped.drop(1).mapNotNone {
@@ -93,7 +98,7 @@ object CombineOverloads extends TreeTransformation {
           val returnTypeSuffix: Option[Suffix] =
             if (retType === default.resultType.typeName) None else Some(ToSuffix(retType))
 
-          Some(combineSameErasureSameTypeParams(methods, Some(ToSuffix(tparams) +? returnTypeSuffix)))
+          Some(combineSameErasureSameTypeParams(methods, Some(ToSuffix(tparams) +? returnTypeSuffix), nativeOwner))
       }
 
     default +: suffixed
@@ -124,14 +129,14 @@ object CombineOverloads extends TreeTransformation {
         )
     }
 
-  def combineOverloads(scope: TreeScope, methods: IArray[MethodTree]): IArray[MethodTree] = {
+  def combineOverloads(scope: TreeScope, methods: IArray[MethodTree], nativeOwner: Boolean): IArray[MethodTree] = {
 
     val methodsByBase = methods.groupBy(Erasure.base(scope))
 
     val newMethods: IArray[MethodTree] =
       methodsByBase.flatMapToIArray {
         case (_, IArray.exactlyOne(one)) => IArray(one)
-        case (_, sameErasure)            => combineSameErasure(sameErasure, scope)
+        case (_, sameErasure)            => combineSameErasure(sameErasure, scope, nativeOwner)
       }
 
     /* This is being a lazy coder:
@@ -151,13 +156,13 @@ object CombineOverloads extends TreeTransformation {
      *
      * Yey
      * */
-    if (newMethods.length =/= methods.length) combineOverloads(scope, newMethods) else newMethods
+    if (newMethods.length =/= methods.length) combineOverloads(scope, newMethods, nativeOwner) else newMethods
   }
 
   /**
     * Ctors are methods...ish. This was easier than refactoring
     */
-  def ctorHack(scope: TreeScope, members: IArray[CtorTree]): IArray[CtorTree] = {
+  def ctorHack(scope: TreeScope, members: IArray[CtorTree], nativeOwner: Boolean): IArray[CtorTree] = {
     val asMethods: IArray[MethodTree] =
       members.map(ctor =>
         MethodTree(
@@ -174,7 +179,7 @@ object CombineOverloads extends TreeTransformation {
           isImplicit = false,
         ),
       )
-    val ret = combineOverloads(scope, asMethods)
+    val ret = combineOverloads(scope, asMethods, nativeOwner)
     ret.map {
       case MethodTree(_, level, _, _, params, _, _, _, comments, _, _) =>
         CtorTree(level, params.head, comments)

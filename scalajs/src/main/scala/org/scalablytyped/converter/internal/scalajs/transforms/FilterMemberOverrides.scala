@@ -24,7 +24,7 @@ class FilterMemberOverrides(parentsResolver: ParentsResolver) extends TreeTransf
 
   private def newMembers(
       scope:       TreeScope,
-      owner:       Tree,
+      owner:       Tree with HasAnnotations,
       members:     IArray[Tree],
       inheritance: IArray[TypeRef],
   ): IArray[Tree] = {
@@ -74,12 +74,12 @@ class FilterMemberOverrides(parentsResolver: ParentsResolver) extends TreeTransf
     val newFields: IArray[FieldTree] = fields.flatMap { f =>
       allMethods.get(f.name) match {
         case Some(ms) if ms.exists(_.params.flatten.length === 0) || ObjectMembers.members.exists(_.name === f.name) =>
-          if (alreadySuffixed) Empty else IArray(f.withSuffix("F" + owner.name.value))
+          if (alreadySuffixed) Empty else IArray(f.withSuffix("F" + owner.name.value, scope.isNative))
         case _ =>
           inheritedFieldsByName.get(f.name) match {
             case Some(conflicting: IArray[FieldTree]) =>
               /* but to retain a field with a different type, we rename it */
-              val withSuffix = f.withSuffix(owner.name)
+              val withSuffix = f.withSuffix(owner.name, scope.isNative)
 
               if (f.tpe === TypeRef.Any || f.tpe === TypeRef.Nothing || (conflicting.exists(_.tpe === f.tpe)))
                 /* there is no point in emitting duplicate fields */
@@ -111,7 +111,7 @@ class FilterMemberOverrides(parentsResolver: ParentsResolver) extends TreeTransf
               .exists(_.exists(f => !f.isReadOnly && f.impl =/= NotImplemented)) =>
         Empty
       case m if inheritedFieldsByName.contains(m.name) =>
-        if (alreadySuffixed) Empty else IArray(m.withSuffix("M" + owner.name.value))
+        if (alreadySuffixed) Empty else IArray(m.withSuffix("M" + owner.name.value, scope.isNative))
       case m =>
         val mBase = Erasure.base(scope)(m)
         inheritedMethodsByBase.get(mBase) match {
