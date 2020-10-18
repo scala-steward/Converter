@@ -13,16 +13,15 @@ object ContainerPolicy extends TreeTransformation {
     val classesToRename = mutable.ArrayBuffer.empty[QualifiedName]
 
     val rewrittenMembers = s.members.map {
-      case pkg: PackageTree => forwarders(pkg, Empty)
+      case pkg: PackageTree => genPkgForwarders(pkg, Empty)
       case mod: ModuleTree if mod.comments.has[Passthrough.type] || !mod.isNative => mod
       case mod: ModuleTree =>
         Action(scope, mod) match {
-          case Action.RemainModule =>
-            forwardersMod(mod)
+          case Action.RemainModule => genModForwarders(mod)
 
           case Action.ConvertToPackage(renameClassOpt) =>
             renameClassOpt.foreach(classesToRename.+=)
-            forwarders(
+            genPkgForwarders(
               PackageTree(mod.annotations, mod.name, mod.members, mod.comments, mod.codePath),
               mod.parents,
             )
@@ -48,7 +47,7 @@ object ContainerPolicy extends TreeTransformation {
 
     val isTopLevel = scope.stack.length < 3 // typings, libName
     if (isTopLevel)
-      forwarders(PackageTree(s.annotations, s.name, rewrittenClasses, s.comments, s.codePath), Empty)
+      genPkgForwarders(PackageTree(s.annotations, s.name, rewrittenClasses, s.comments, s.codePath), Empty)
     else
       s.withMembers(rewrittenClasses)
   }
@@ -89,7 +88,7 @@ object ContainerPolicy extends TreeTransformation {
     }
   }
 
-  def forwarders[C <: ContainerTree](c: C, inheritance: IArray[TypeRef]): C = {
+  def genPkgForwarders(c: PackageTree, inheritance: IArray[TypeRef]): PackageTree = {
     val hatCp = c.codePath + Name.namespaced
 
     val (members, rest) = c.members.partitionCollect { case x: MemberTree => x }
@@ -194,10 +193,10 @@ object ContainerPolicy extends TreeTransformation {
           ),
         )
 
-    c.withMembers(rest ++ forwarders ++ IArray.fromOption(hatModuleOpt)).asInstanceOf[C]
+    c.copy(members = rest ++ forwarders ++ IArray.fromOption(hatModuleOpt))
   }
 
-  def forwardersMod(mod: ModuleTree): ModuleTree = {
+  def genModForwarders(mod: ModuleTree): ModuleTree = {
     val isGlobal = mod.annotations.contains(Annotation.JsGlobalScope)
     val hatCp    = mod.codePath + Name.namespaced
 

@@ -102,64 +102,56 @@ class IdentifyReactComponents(
     outer.index.flatMapToIArray {
       case (_, sameName) =>
         /** semantically all these except methods are [[Option]] */
-        val (pkgs, mods, fields, classes, methods, _) = sameName.partitionCollect5(
-          { case x: PackageTree => x },
-          { case x: ModuleTree  => x },
-          { case x: FieldTree   => x },
-          { case x: ClassTree   => x },
-          { case x: MethodTree  => x },
+        val (containers, fields, classes, methods, _) = sameName.partitionCollect4(
+          { case x: ContainerTree => x },
+          { case x: FieldTree     => x },
+          { case x: ClassTree     => x },
+          { case x: MethodTree    => x },
         )
 
-        val _1: IArray[Component] = pkgs.flatMap(x => recurse(scope / x, x))
-
         /* handle together to fix nesting. when a class component is detected, its static member components will be found in the companion object */
-        val _2: IArray[Component] = {
-          def handleMods(mods: IArray[ModuleTree]) =
+        val _1: IArray[Component] = {
+          def handleContainers(mods: IArray[ContainerTree]) =
             mods.flatMap { x =>
-              /* nested native objects cannot have a JSImport or JSGlobal annotation, and that's used for naming */
-              val guaranteedLocation = x.annotations match {
-                case LocationFrom(_) => x
-                case anns            => x.copy(annotations = anns ++ IArray(locationFrom(scope / x)))
-              }
-
-              maybeModuleComponent(guaranteedLocation, scope / guaranteedLocation) match {
+              maybeContainerComponent(x, scope / x) match {
                 case Left(pkg) => all(scope / pkg, pkg)
                 case Right(c)  => IArray(c)
               }
             }
 
-          (mods, classes) match {
+          (containers, classes) match {
             case (Empty, Empty) =>
               Empty
             case (Empty, classes) =>
               classes.mapNotNone(x => maybeClassComponent(x, outer, scope / x))
-            case (mods, Empty) =>
-              handleMods(mods)
-            case (IArray.first(mod), IArray.first(cls)) =>
+            case (containers, Empty) =>
+              handleContainers(containers)
+            case (IArray.first(c), IArray.first(cls)) =>
               val newScope = scope / cls
               maybeClassComponent(cls, outer, newScope) match {
-                case None => handleMods(mods)
+                case None => handleContainers(containers)
                 case Some(clsComp) =>
-                  val nested = recurse(newScope, separateMod(mod, newScope).restAsPackage).sortBy(_.fullName)
+                  val nested = recurse(newScope, separateContainer(c, newScope).restAsPackage).sortBy(_.fullName)
                   IArray(clsComp.withNested(nested))
               }
           }
         }
 
-        val _3: IArray[Component] =
+        val _2: IArray[Component] =
           fields.flatMap { x =>
             /* translate to module first (it will be translated back later) to find nested components */
             val anns     = IArray(locationFrom(scope / x))
             val asModule = ModuleTree(anns, x.name, IArray(x.tpe), Empty, x.comments, x.codePath, isOverride = false)
-            maybeModuleComponent(asModule, scope / asModule) match {
+            maybeContainerComponent(asModule, scope / asModule) match {
               case Left(_)  => Empty
               case Right(c) => IArray(c)
             }
           }
-        val _4: IArray[Component] =
+
+        val _3: IArray[Component] =
           methods.flatMap(x => IArray.fromOption(maybeMethodComponent(x, outer, scope / x)))
 
-        IArray(_1, _2, _3, _4).flatten
+        IArray(_1, _2, _3).flatten
     }
 
   val Unnamed = Set(Name.Default, Name.namespaced, Name.APPLY)
@@ -233,49 +225,57 @@ class IdentifyReactComponents(
     }
   }
 
-  case class SeparatedMod(
-      cleanedParentRefs: IArray[TypeRef],
-      applyMembers:      IArray[MethodTree],
-      restAsPackage:     PackageTree,
+  case class SeparatedContainer(
+      parentRefs:    IArray[TypeRef],
+      applyMembers:  IArray[MethodTree],
+      restAsPackage: PackageTree,
   )
 
-  def separateMod(mod: ModuleTree, scope: TreeScope): SeparatedMod = {
-    val cleanedParentRefs: IArray[TypeRef] =
-      mod.parents.map {
-        case TypeRef(QualifiedName.TopLevel, IArray.exactlyOne(tpe), _) => tpe
-        case other                                                      => other
-      }
+  def separateContainer(c: ContainerTree, scope: TreeScope): SeparatedContainer = {
+    val parentRefs: IArray[TypeRef] = {
+      c.index
+        .getOrElse(Name.namespaced, Empty)
+        .collectFirst {
+          case m: ModuleTree => m.parents
+          case f: FieldTree =>
+            f.tpe match {
+              case TypeRef.Intersection(types, _) => types
+              case other                          => IArray(other)
+            }
+        }
+        .getOrElse(Empty)
+    }
 
     val (applyMembers: IArray[MethodTree], restMembers: IArray[Tree]) = {
-      val parents    = parentsResolver(scope, mod.copy(parents = cleanedParentRefs)).transitiveParents.values
-      val allMembers = mod.members ++ IArray.fromTraversable(parents).flatMap(_.members)
+      val parents    = parentsResolver(scope, parentRefs).transitiveParents.values
+      val allMembers = c.members ++ IArray.fromTraversable(parents).flatMap(_.members)
       allMembers.partitionCollect { case m: MethodTree if m.name === Name.APPLY => m }
     }
 
-    val restAsPackage = PackageTree(mod.annotations, mod.name, restMembers, mod.comments, mod.codePath)
-    SeparatedMod(cleanedParentRefs, applyMembers, restAsPackage)
+    val restAsPackage = PackageTree(c.annotations, c.name, restMembers, c.comments, c.codePath)
+    SeparatedContainer(parentRefs, applyMembers, restAsPackage)
   }
 
-  def maybeModuleComponent(mod: ModuleTree, scope: TreeScope): Either[PackageTree, Component] = {
-    val separated = separateMod(mod, scope)
+  def maybeContainerComponent(c: ContainerTree, scope: TreeScope): Either[PackageTree, Component] = {
+    val separated = separateContainer(c, scope)
 
     val componentOpt: Option[Component] = {
-      def fromParents = separated.cleanedParentRefs match {
+      def fromParents = separated.parentRefs match {
         case Empty => None
         case some =>
           val asField = FieldTree(
             annotations = Empty,
-            name        = mod.name,
+            name        = c.name,
             tpe         = TypeRef.Intersection(some, NoComments),
             impl        = ExprTree.native,
             isReadOnly  = true,
-            isOverride  = mod.isOverride,
-            comments    = mod.comments,
-            codePath    = mod.codePath,
+            isOverride  = false,
+            comments    = c.comments,
+            codePath    = c.codePath,
           )
-          maybeFieldComponent(asField, mod, scope)
+          maybeFieldComponent(asField, c, scope)
       }
-      def fromApplies = separated.applyMembers.firstDefined(a => maybeMethodComponent(a, mod, scope / a))
+      def fromApplies = separated.applyMembers.firstDefined(a => maybeMethodComponent(a, c, scope / a))
 
       fromParents.orElse(fromApplies)
     }
@@ -381,7 +381,7 @@ class IdentifyReactComponents(
 
       val name = fromCodePath.orElse(fromAnnotations(anns))
 
-      IArray
+      val ret = IArray
         .fromOption(name)
         .map(x => nameVariants(x.unescaped).head)
         .distinct
@@ -391,6 +391,7 @@ class IdentifyReactComponents(
         case other if other.endsWith("Cls") => Name(other.dropRight(3))
         case other                          => Name(other)
       }
+      ret
     }
 
     def fromAnnotations(anns: IArray[Annotation]): Option[Name] =
