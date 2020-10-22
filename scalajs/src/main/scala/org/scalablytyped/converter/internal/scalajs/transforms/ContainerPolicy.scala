@@ -8,6 +8,7 @@ import scala.collection.mutable
 
 object ContainerPolicy extends TreeTransformation {
   case object Passthrough extends Comment.Data
+  case class Forwarder(anns: IArray[Annotation]) extends Comment.Data
 
   override def leaveContainerTree(scope: TreeScope)(s: ContainerTree): ContainerTree = {
     val classesToRename = mutable.ArrayBuffer.empty[QualifiedName]
@@ -88,12 +89,12 @@ object ContainerPolicy extends TreeTransformation {
     }
   }
 
-  def genPkgForwarders(c: PackageTree, inheritance: IArray[TypeRef]): PackageTree = {
-    val hatCp = c.codePath + Name.namespaced
+  def genPkgForwarders(pkg: PackageTree, inheritance: IArray[TypeRef]): PackageTree = {
+    val hatCp = pkg.codePath + Name.namespaced
 
-    val (members, rest) = c.members.partitionCollect { case x: MemberTree => x }
+    val (members, rest) = pkg.members.partitionCollect { case x: MemberTree => x }
 
-    val isGlobal = c.annotations.contains(Annotation.JsGlobalScope)
+    val isGlobal = pkg.annotations.contains(Annotation.JsGlobalScope)
 
     val dynamicRef: ExprTree =
       if (isGlobal) Ref(QualifiedName.DynamicGlobal)
@@ -122,7 +123,7 @@ object ContainerPolicy extends TreeTransformation {
             impl        = impl,
             resultType  = m.resultType,
             isOverride  = false,
-            comments    = m.comments,
+            comments    = m.comments + CommentData(Forwarder(m.annotations)),
             codePath    = m.codePath,
             isImplicit  = false,
           ),
@@ -143,7 +144,7 @@ object ContainerPolicy extends TreeTransformation {
             impl        = impl,
             resultType  = f.tpe,
             isOverride  = false,
-            comments    = f.comments,
+            comments    = f.comments + CommentData(Forwarder(f.annotations)),
             codePath    = f.codePath,
             isImplicit  = false,
           )
@@ -183,7 +184,7 @@ object ContainerPolicy extends TreeTransformation {
       else
         Some(
           ModuleTree(
-            annotations = c.annotations,
+            annotations = pkg.annotations,
             name        = Name.namespaced,
             parents     = inheritance,
             members     = Empty,
@@ -193,7 +194,7 @@ object ContainerPolicy extends TreeTransformation {
           ),
         )
 
-    c.copy(members = rest ++ forwarders ++ IArray.fromOption(hatModuleOpt))
+    pkg.copy(members = rest ++ forwarders ++ IArray.fromOption(hatModuleOpt))
   }
 
   def genModForwarders(mod: ModuleTree): ModuleTree = {
@@ -265,6 +266,7 @@ object ContainerPolicy extends TreeTransformation {
       annotations = Empty,
       parents     = Empty,
       members     = rewrittenMembers ++ setters ++ IArray.fromOption(hatModuleOpt),
+      comments    = mod.comments + CommentData(Forwarder(mod.annotations)),
     )
   }
 }

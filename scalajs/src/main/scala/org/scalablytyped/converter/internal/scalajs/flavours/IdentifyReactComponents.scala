@@ -4,6 +4,7 @@ package flavours
 
 import org.scalablytyped.converter.Selection
 import org.scalablytyped.converter.internal.maps._
+import org.scalablytyped.converter.internal.scalajs.transforms.ContainerPolicy
 
 class IdentifyReactComponents(
     reactNames:             ReactNames,
@@ -12,6 +13,17 @@ class IdentifyReactComponents(
 ) {
   def length(qualifiedName: QualifiedName): Int =
     qualifiedName.parts.foldLeft(0)(_ + _.unescaped.length)
+
+  def allAnnotations(tree: Tree): IArray[Annotation] =
+    tree match {
+      case tree: Tree with HasAnnotations =>
+        val fromComments = tree.comments.extract { case ContainerPolicy.Forwarder(anns) => anns } match {
+          case Some((anns, _)) => anns
+          case None            => Empty
+        }
+        fromComments ++ tree.annotations
+      case _ => Empty
+    }
 
   /* this is effectively a heuristic which component to use */
   implicit val ComponentOrdering: Ordering[Component] = Ordering.by { c =>
@@ -198,7 +210,7 @@ class IdentifyReactComponents(
               Component(
                 location        = Right(locationFrom(scope)),
                 scalaRef        = TypeRef(owner.codePath),
-                fullName        = componentName(scope, owner.annotations, owner.codePath),
+                fullName        = componentName(scope, allAnnotations(owner), owner.codePath),
                 tparams         = method.tparams,
                 propsRef        = propsRef,
                 componentType   = ComponentType.Field,
@@ -211,7 +223,7 @@ class IdentifyReactComponents(
               Component(
                 location        = Right(locationFrom(scope)),
                 scalaRef        = TypeRef(method.codePath, TypeParamTree.asTypeArgs(method.tparams), NoComments),
-                fullName        = componentName(scope, owner.annotations, QualifiedName(IArray(method.name))),
+                fullName        = componentName(scope, allAnnotations(owner), QualifiedName(IArray(method.name))),
                 tparams         = method.tparams,
                 propsRef        = propsRef,
                 componentType   = ComponentType.Function,
@@ -311,7 +323,7 @@ class IdentifyReactComponents(
       Component(
         location        = Right(locationFrom(scope)),
         scalaRef        = TypeRef(field.codePath),
-        fullName        = componentName(scope, owner.annotations, QualifiedName(IArray(field.name))),
+        fullName        = componentName(scope, allAnnotations(owner), QualifiedName(IArray(field.name))),
         tparams         = Empty,
         propsRef        = propsRef,
         componentType   = ComponentType.Field,
@@ -359,7 +371,7 @@ class IdentifyReactComponents(
           Component(
             location        = Right(locationFrom(scope)),
             scalaRef        = TypeRef(cls.codePath, TypeParamTree.asTypeArgs(cls.tparams), NoComments),
-            fullName        = componentName(scope, owner.annotations, cls.codePath),
+            fullName        = componentName(scope, allAnnotations(owner), cls.codePath),
             tparams         = cls.tparams,
             propsRef        = propsRef,
             componentType   = ComponentType.Class,
@@ -406,28 +418,26 @@ class IdentifyReactComponents(
 
   def isUpper(n: Name): Boolean = n.value.head.isUpper
 
-  object LocationFrom {
-    def unapply(anns: IArray[Annotation]): Option[LocationAnnotation] =
-      anns.collectFirst {
-        case a: Annotation.JsImport => a
-        case a: Annotation.JsGlobal => a
-        case Annotation.JsGlobalScope => Annotation.JsGlobalScope
-      }
-  }
-
   def locationFrom(scope: TreeScope): LocationAnnotation = {
     var baseLocationOpt: Option[LocationAnnotation] = None
     var after = List.empty[Tree]
     var idx   = 0
 
+    def fromAnns(anns: IArray[Annotation]): Option[LocationAnnotation] =
+      anns.collectFirst {
+        case a: Annotation.JsImport => a
+        case a: Annotation.JsGlobal => a
+        case Annotation.JsGlobalScope => Annotation.JsGlobalScope
+      }
+
     while (idx < scope.stack.length && baseLocationOpt.isEmpty) {
       val current = scope.stack(idx)
       val base: Option[LocationAnnotation] =
         current match {
-          case ClassTree(_, LocationFrom(loc), _, _, _, _, _, _, _, _, _) => Some(loc)
-          case ModuleTree(LocationFrom(loc), _, _, _, _, _, _)            => Some(loc)
-          case PackageTree(LocationFrom(loc), _, _, _, _)                 => Some(loc)
-          case _                                                          => None
+          case cls: ClassTree   => fromAnns(allAnnotations(cls))
+          case mod: ModuleTree  => fromAnns(allAnnotations(mod))
+          case pkg: PackageTree => fromAnns(allAnnotations(pkg))
+          case _ => None
         }
 
       if (base.isEmpty) {
