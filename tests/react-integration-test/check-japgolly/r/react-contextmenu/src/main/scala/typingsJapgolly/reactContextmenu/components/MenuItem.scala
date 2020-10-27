@@ -20,7 +20,7 @@ object MenuItem {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[typingsJapgolly.reactContextmenu.mod.MenuItem] {
+       with StBuildingComponent[js.Object] {
     @scala.inline
     def attributes(value: HTMLAttributes[HTMLDivElement]): this.type = set("attributes", value.asInstanceOf[js.Any])
     @scala.inline

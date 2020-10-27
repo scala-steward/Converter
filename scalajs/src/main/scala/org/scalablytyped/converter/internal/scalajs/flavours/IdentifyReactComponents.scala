@@ -41,13 +41,18 @@ class IdentifyReactComponents(
       case Left(_)                                  => 0
     }
 
+    val preferNested = c.nested.length
+
     /* because for instance mui ships with icons called `List` and `Tab` */
     val preferPropsMatchesName = c.propsRef.ref.name.unescaped.startsWith(c.fullName.unescaped)
 
     /* because for instance mui declares both a default and a names export, where only the former exists */
     val preferDefault = c.scalaRef.name === Name.Default
 
-    (preferNotSrc, preferModule, preferShortModuleName, preferPropsMatchesName, preferDefault)
+    /* if components are otherwise the same, choosing the class one means we get a ref type */
+    val preferClass = c.componentType === ComponentType.Class
+
+    (preferNotSrc, preferModule, preferShortModuleName, preferNested, preferPropsMatchesName, preferDefault, preferClass)
   }
 
   def intrinsics(scope: TreeScope): IArray[Component] =
@@ -76,7 +81,7 @@ class IdentifyReactComponents(
     } else Empty
 
   def all(scope: TreeScope, tree: ContainerTree): IArray[Component] =
-    recurse(scope, tree)
+    recurse(scope, ContainerPolicy.Undo.visitContainerTree(scope)(tree))
       .filterNot(c => reactNames.ComponentQNames(c.scalaRef.typeName))
       .map(_.rewritten(scope, Wildcards.Remove))
 
@@ -135,12 +140,12 @@ class IdentifyReactComponents(
             case (Empty, Empty) =>
               Empty
             case (Empty, classes) =>
-              classes.mapNotNone(x => maybeClassComponent(x, outer, scope / x))
+              classes.mapNotNone(x => maybeClassComponent(x, scope / x))
             case (containers, Empty) =>
               handleContainers(containers)
             case (IArray.first(c), IArray.first(cls)) =>
               val newScope = scope / cls
-              maybeClassComponent(cls, outer, newScope) match {
+              maybeClassComponent(cls, newScope) match {
                 case None => handleContainers(containers)
                 case Some(clsComp) =>
                   val nested = recurse(newScope, separateContainer(c, newScope).restAsPackage).sortBy(_.fullName)
@@ -169,21 +174,21 @@ class IdentifyReactComponents(
   val Unnamed = Set(Name.Default, Name.namespaced, Name.APPLY)
 
   def maybeMethodComponent(method: MethodTree, owner: ContainerTree, scope: TreeScope): Option[Component] = {
-    def returnsElement(scope: TreeScope, current: TypeRef): Option[TypeRef] =
+    def returnsElement(scope: TreeScope, current: TypeRef, acceptAny: Boolean): Option[TypeRef] =
       if (reactNames.isElement(current.typeName)) Some(current)
-      else if (current === TypeRef.Any)
+      else if (acceptAny && current === TypeRef.Any)
         Some(current) // unfortunately this conforms on the TS side, let's see how it works out
       else if (scope.isAbstract(current)) None
       else
         current match {
-          case Optionality(opt, base) if opt =/= Optionality.No => returnsElement(scope, base)
+          case Optionality(opt, base) if opt =/= Optionality.No => returnsElement(scope, base, acceptAny)
           case _ =>
             scope
               .lookup(current.typeName)
               .firstDefined {
                 case (x: TypeAliasTree, newScope) =>
                   val rewritten = FillInTParams(x, newScope, current.targs, Empty)
-                  returnsElement(scope, rewritten.alias)
+                  returnsElement(scope, rewritten.alias, acceptAny)
                 case _ => None
               }
         }
@@ -200,17 +205,19 @@ class IdentifyReactComponents(
         val propsRef        = PropsRef(flattenedParams.headOption.map(_.tpe).getOrElse(TypeRef.Object))
         def isAbstractProps = scope.isAbstract(propsRef.ref)
         def validName       = isUpper(method.name) || (Unnamed(method.name) && (isUpper(owner.name) || Unnamed(owner.name)))
-
-        if (!validName || !isTopLevel || isAbstractProps) None
+        if (method.name.unescaped ==="default") {
+          println("")
+        }
+        if (!isTopLevel || isAbstractProps) None
         else
           for {
-            _ <- returnsElement(scope, method.resultType)
+            _ <- returnsElement(scope, method.resultType, acceptAny = validName)
           } yield method.name match {
             case Name.APPLY =>
               Component(
                 location        = Right(locationFrom(scope)),
-                scalaRef        = TypeRef(owner.codePath),
-                fullName        = componentName(scope, allAnnotations(owner), owner.codePath),
+                scalaRef        = TypeRef(method.codePath),
+                fullName        = componentName(allAnnotations(method), method.codePath),
                 tparams         = method.tparams,
                 propsRef        = propsRef,
                 componentType   = ComponentType.Field,
@@ -223,7 +230,7 @@ class IdentifyReactComponents(
               Component(
                 location        = Right(locationFrom(scope)),
                 scalaRef        = TypeRef(method.codePath, TypeParamTree.asTypeArgs(method.tparams), NoComments),
-                fullName        = componentName(scope, allAnnotations(owner), QualifiedName(IArray(method.name))),
+                fullName        = componentName(allAnnotations(method), QualifiedName(IArray(method.name))),
                 tparams         = method.tparams,
                 propsRef        = propsRef,
                 componentType   = ComponentType.Function,
@@ -244,19 +251,11 @@ class IdentifyReactComponents(
   )
 
   def separateContainer(c: ContainerTree, scope: TreeScope): SeparatedContainer = {
-    val parentRefs: IArray[TypeRef] = {
-      c.index
-        .getOrElse(Name.namespaced, Empty)
-        .collectFirst {
-          case m: ModuleTree => m.parents
-          case f: FieldTree =>
-            f.tpe match {
-              case TypeRef.Intersection(types, _) => types
-              case other                          => IArray(other)
-            }
-        }
-        .getOrElse(Empty)
-    }
+    val parentRefs: IArray[TypeRef] =
+      c match {
+        case _: PackageTree => Empty
+        case x: ModuleTree  => x.parents
+      }
 
     val (applyMembers: IArray[MethodTree], restMembers: IArray[Tree]) = {
       val parents    = parentsResolver(scope, parentRefs).transitiveParents.values
@@ -276,7 +275,7 @@ class IdentifyReactComponents(
         case Empty => None
         case some =>
           val asField = FieldTree(
-            annotations = Empty,
+            annotations = allAnnotations(c),
             name        = c.name,
             tpe         = TypeRef.Intersection(some, NoComments),
             impl        = ExprTree.native,
@@ -294,7 +293,7 @@ class IdentifyReactComponents(
 
     componentOpt match {
       case Some(component) =>
-        val nested = recurse(scope, separated.restAsPackage)
+        val nested = recurse(scope, separated.restAsPackage).sortBy(_.fullName)
         Right(component.withNested(nested))
       case None =>
         Left(separated.restAsPackage)
@@ -323,7 +322,7 @@ class IdentifyReactComponents(
       Component(
         location        = Right(locationFrom(scope)),
         scalaRef        = TypeRef(field.codePath),
-        fullName        = componentName(scope, allAnnotations(owner), QualifiedName(IArray(field.name))),
+        fullName        = componentName(allAnnotations(field), QualifiedName(IArray(field.name))),
         tparams         = Empty,
         propsRef        = propsRef,
         componentType   = ComponentType.Field,
@@ -342,7 +341,7 @@ class IdentifyReactComponents(
 
           maybeMethodComponent(
             MethodTree(
-              annotations = field.annotations,
+              annotations = allAnnotations(field),
               level       = ProtectionLevel.Default,
               name        = field.name,
               tparams     = Empty,
@@ -363,7 +362,7 @@ class IdentifyReactComponents(
     fieldResult.orElse(isAliasToFC)
   }
 
-  def maybeClassComponent(cls: ClassTree, owner: ContainerTree, scope: TreeScope): Option[Component] =
+  def maybeClassComponent(cls: ClassTree, scope: TreeScope): Option[Component] =
     if (cls.classType =/= ClassType.Class) None
     else
       parentsResolver(scope, cls).transitiveParents.firstDefined { (tr, _) =>
@@ -371,7 +370,7 @@ class IdentifyReactComponents(
           Component(
             location        = Right(locationFrom(scope)),
             scalaRef        = TypeRef(cls.codePath, TypeParamTree.asTypeArgs(cls.tparams), NoComments),
-            fullName        = componentName(scope, allAnnotations(owner), cls.codePath),
+            fullName        = componentName(allAnnotations(cls), cls.codePath),
             tparams         = cls.tparams,
             propsRef        = propsRef,
             componentType   = ComponentType.Class,
@@ -383,7 +382,7 @@ class IdentifyReactComponents(
       }
 
   object componentName {
-    def apply(scope: TreeScope, anns: IArray[Annotation], codePath: QualifiedName): Name = {
+    def apply(anns: IArray[Annotation], codePath: QualifiedName): Name = {
 
       val fromCodePath = codePath.parts
         .filterNot(Unnamed)

@@ -8,9 +8,7 @@ import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
-@JSImport("@stardust-ui/react-component-ref/dist/es/RefFindNode", JSImport.Namespace)
-@js.native
-object refFindNodeMod extends js.Object {
+object refFindNodeMod {
   @js.native
   trait RefFindNode
     extends Component[RefProps, js.Object, js.Any] {
@@ -23,14 +21,28 @@ object refFindNodeMod extends js.Object {
     var prevNode: (/* import warning: transforms.QualifyReferences#resolveTypeRef many Couldn't qualify Node */ js.Any) | Null = js.native
   }
   
+  @JSImport("@stardust-ui/react-component-ref/dist/es/RefFindNode", JSImport.Default)
   @js.native
   class default () extends RefFindNode
   
   /* static members */
-  @js.native
-  object default extends js.Object {
-    var displayName: String = js.native
-    var propTypes: Children | InnerRef = js.native
+  object default {
+    
+    @JSImport("@stardust-ui/react-component-ref/dist/es/RefFindNode", JSImport.Default)
+    @js.native
+    val ^ : js.Any = js.native
+    
+    @JSImport("@stardust-ui/react-component-ref/dist/es/RefFindNode", "default.displayName")
+    @js.native
+    val displayName: String = js.native
+    @scala.inline
+    def displayName_=(x: String): Unit = ^.asInstanceOf[js.Dynamic].updateDynamic("displayName")(x.asInstanceOf[js.Any])
+    
+    @JSImport("@stardust-ui/react-component-ref/dist/es/RefFindNode", "default.propTypes")
+    @js.native
+    val propTypes: Children | InnerRef = js.native
+    @scala.inline
+    def propTypes_=(x: Children | InnerRef): Unit = ^.asInstanceOf[js.Dynamic].updateDynamic("propTypes")(x.asInstanceOf[js.Any])
   }
   
 }

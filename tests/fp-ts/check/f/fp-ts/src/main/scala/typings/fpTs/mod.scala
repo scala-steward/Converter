@@ -5,16 +5,20 @@ import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
-@JSImport("fp-ts", JSImport.Namespace)
-@js.native
-object mod extends js.Object {
-  @js.native
-  object either extends js.Object {
+object mod {
+  object either {
+    
+    @JSImport("fp-ts", "either.URI")
+    @js.native
     val URI: /* "Either" */ String = js.native
   }
   
-  @js.native
-  object task extends js.Object {
+  object eitherT
+  
+  object task {
+    
+    @JSImport("fp-ts", "task.tryCatch")
+    @js.native
     def tryCatch[L, A](f: js.Any, onrejected: js.Function1[/* reason */ js.Object, L]): Either[L, A] = js.native
   }
   

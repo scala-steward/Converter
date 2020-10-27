@@ -8,19 +8,36 @@ import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
-@JSImport("semantic-ui-react/dist/commonjs/elements/Button", JSImport.Namespace)
-@js.native
-object mod extends js.Object {
+object mod {
+  @JSImport("semantic-ui-react/dist/commonjs/elements/Button", JSImport.Default)
   @js.native
   class default ()
     extends typingsJapgolly.semanticUiReact.buttonMod.default
   
   /* static members */
-  @js.native
-  object default extends js.Object {
-    var Content: StatelessComponent[ButtonContentProps] = js.native
-    var Group: StatelessComponent[ButtonGroupProps] = js.native
-    var Or: StatelessComponent[ButtonOrProps] = js.native
+  object default {
+    
+    @JSImport("semantic-ui-react/dist/commonjs/elements/Button", JSImport.Default)
+    @js.native
+    val ^ : js.Any = js.native
+    
+    @JSImport("semantic-ui-react/dist/commonjs/elements/Button", "default.Content")
+    @js.native
+    val Content: StatelessComponent[ButtonContentProps] = js.native
+    @scala.inline
+    def Content_=(x: StatelessComponent[ButtonContentProps]): Unit = ^.asInstanceOf[js.Dynamic].updateDynamic("Content")(x.asInstanceOf[js.Any])
+    
+    @JSImport("semantic-ui-react/dist/commonjs/elements/Button", "default.Group")
+    @js.native
+    val Group: StatelessComponent[ButtonGroupProps] = js.native
+    @scala.inline
+    def Group_=(x: StatelessComponent[ButtonGroupProps]): Unit = ^.asInstanceOf[js.Dynamic].updateDynamic("Group")(x.asInstanceOf[js.Any])
+    
+    @JSImport("semantic-ui-react/dist/commonjs/elements/Button", "default.Or")
+    @js.native
+    val Or: StatelessComponent[ButtonOrProps] = js.native
+    @scala.inline
+    def Or_=(x: StatelessComponent[ButtonOrProps]): Unit = ^.asInstanceOf[js.Dynamic].updateDynamic("Or")(x.asInstanceOf[js.Any])
   }
   
 }

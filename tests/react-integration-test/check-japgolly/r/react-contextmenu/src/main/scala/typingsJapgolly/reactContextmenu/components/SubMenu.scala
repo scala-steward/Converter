@@ -21,7 +21,7 @@ object SubMenu {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[typingsJapgolly.reactContextmenu.mod.SubMenu] {
+       with StBuildingComponent[js.Object] {
     @scala.inline
     def className(value: String): this.type = set("className", value.asInstanceOf[js.Any])
     @scala.inline

@@ -10,7 +10,6 @@ import typingsSlinky.react.mod.ReactType
 import typingsSlinky.semanticUiReact.accordionAccordionAccordionMod.AccordionAccordionProps
 import typingsSlinky.semanticUiReact.accordionAccordionMod.AccordionProps
 import typingsSlinky.semanticUiReact.accordionContentMod.AccordionContentProps
-import typingsSlinky.semanticUiReact.accordionMod.default
 import typingsSlinky.semanticUiReact.accordionPanelMod.AccordionPanelProps
 import typingsSlinky.semanticUiReact.accordionTitleMod.AccordionTitleProps
 import typingsSlinky.semanticUiReact.genericMod.SemanticShorthandCollection
@@ -28,7 +27,7 @@ object Accordion {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[tag.type, default] {
+       with StBuildingComponent[tag.type, js.Object] {
     @scala.inline
     def activeIndexVarargs(value: Double*): this.type = set("activeIndex", js.Array(value :_*))
     @scala.inline

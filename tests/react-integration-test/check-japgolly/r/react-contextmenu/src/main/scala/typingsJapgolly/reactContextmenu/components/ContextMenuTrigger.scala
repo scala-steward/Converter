@@ -17,7 +17,7 @@ object ContextMenuTrigger {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[typingsJapgolly.reactContextmenu.mod.ContextMenuTrigger] {
+       with StBuildingComponent[js.Object] {
     @scala.inline
     def attributes(value: HTMLAttributes[_]): this.type = set("attributes", value.asInstanceOf[js.Any])
     @scala.inline

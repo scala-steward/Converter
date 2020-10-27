@@ -269,4 +269,37 @@ object ContainerPolicy extends TreeTransformation {
       comments    = mod.comments + CommentData(Forwarder(mod.annotations)),
     )
   }
+
+  object Undo extends TreeTransformation {
+    override def leaveContainerTree(scope: TreeScope)(s: ContainerTree): ContainerTree =
+      s match {
+        case x: PackageTree =>
+          x.index.getOrElse(Name.namespaced, Empty).collectFirst { case x: ModuleTree => x } match {
+            case Some(m) =>
+              val newMembers = x.members.filter(_.name =/= Name.namespaced) ++ m.members
+              ModuleTree(m.annotations, x.name, m.parents, newMembers, x.comments, x.codePath, isOverride = false)
+            case None =>
+              x
+          }
+        case x: ModuleTree =>
+          x.index.getOrElse(Name.namespaced, Empty).collectFirst { case x: FieldTree => x } match {
+            case Some(f) =>
+              val parents = f.tpe match {
+                case TypeRef.Intersection(parents, _) => parents
+                case other                            => IArray(other)
+              }
+              x.copy(parents = parents, annotations = f.annotations)
+            case None => x
+          }
+      }
+
+    override def leaveMemberTree(scope: TreeScope)(s: MemberTree): MemberTree =
+      s match {
+        case x: MethodTree if x.comments.has[ContainerPolicy.Forwarder] =>
+          val Some((anns, cs)) = x.comments.extract { case ContainerPolicy.Forwarder(anns) => anns }
+          if (x.params.isEmpty) FieldTree(anns, x.name, x.resultType, ExprTree.native, true, false, cs, x.codePath)
+          else x.copy(annotations = x.annotations ++ anns, comments = cs)
+        case other => other
+      }
+  }
 }

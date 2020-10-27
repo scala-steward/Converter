@@ -5,7 +5,6 @@ import japgolly.scalajs.react.ReactMouseEventFrom
 import org.scalajs.dom.raw.HTMLDivElement
 import typingsJapgolly.StBuildingComponent
 import typingsJapgolly.semanticUiReact.accordionAccordionAccordionMod.AccordionAccordionProps
-import typingsJapgolly.semanticUiReact.accordionAccordionAccordionMod.default
 import typingsJapgolly.semanticUiReact.accordionPanelMod.AccordionPanelProps
 import typingsJapgolly.semanticUiReact.accordionTitleMod.AccordionTitleProps
 import typingsJapgolly.semanticUiReact.genericMod.SemanticShorthandCollection
@@ -22,7 +21,7 @@ object AccordionAccordion {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[default] {
+       with StBuildingComponent[js.Object] {
     @scala.inline
     def activeIndexVarargs(value: Double*): this.type = set("activeIndex", js.Array(value :_*))
     @scala.inline

@@ -10,7 +10,6 @@ import typingsJapgolly.StBuildingComponent
 import typingsJapgolly.react.mod.ReactNodeArray
 import typingsJapgolly.react.mod.ReactType
 import typingsJapgolly.semanticUiReact.accordionTitleMod.AccordionTitleProps
-import typingsJapgolly.semanticUiReact.accordionTitleMod.default
 import typingsJapgolly.semanticUiReact.genericMod.SemanticShorthandContent
 import typingsJapgolly.semanticUiReact.genericMod.SemanticShorthandItem
 import scala.scalajs.js
@@ -25,7 +24,7 @@ object AccordionTitle {
   @scala.inline
   class Builder (val args: js.Array[js.Any])
     extends AnyVal
-       with StBuildingComponent[default] {
+       with StBuildingComponent[js.Object] {
     @scala.inline
     def active(value: Boolean): this.type = set("active", value.asInstanceOf[js.Any])
     @scala.inline

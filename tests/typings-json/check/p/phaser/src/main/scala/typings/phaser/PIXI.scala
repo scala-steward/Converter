@@ -4,12 +4,11 @@ import scala.scalajs.js
 import scala.scalajs.js.`|`
 import scala.scalajs.js.annotation.{JSGlobalScope, JSGlobal, JSImport, JSName, JSBracketAccess}
 
-@JSGlobal("PIXI")
-@js.native
-object PIXI extends js.Object {
+object PIXI {
   @js.native
   sealed trait blendModes extends js.Object
   
+  @JSGlobal("PIXI.blendModes")
   @js.native
   object blendModes extends js.Object {
     @js.native
@@ -23,6 +22,7 @@ object PIXI extends js.Object {
   @js.native
   sealed trait scaleModes extends js.Object
   
+  @JSGlobal("PIXI.scaleModes")
   @js.native
   object scaleModes extends js.Object {
     @js.native
